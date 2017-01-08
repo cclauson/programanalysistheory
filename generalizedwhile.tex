@@ -1,0 +1,132 @@
+%\documentclass[twocolumn,11pt]{article}
+\documentclass[11pt]{article}
+\usepackage{listings}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage[mathscr]{euscript}
+
+\begin{document}
+
+\title{Generalized While Programming Languages with Data Flow Analysis}
+\author{C. E. Clauson}
+%\affiliation{Somewhere}
+\maketitle
+
+\begin{abstract}
+The While programming language has been defined in literature (source?).  In this paper we propose a class of programming languages called generalized While languages, of which While is a specific case.  (Do we analyze anything?)
+\end{abstract}
+
+\section{Introduction}
+(TODO: Put stuff here...)
+
+We use the symbol $\mathbb{B}$ to represent the Boolean set, which has the members \texttt{true} and \texttt{false}.
+
+\section{Generalized While}
+For a given quintuple $(S, M, C, \delta_{1}, \delta_{2})$, we define the set $GW(S, M, C, \delta_{1}, \delta_{2})$ as a set of formulas, under the following assumptions:
+
+\begin{itemize}
+\item Each member of $S$ (state set) is finitely representable (and thus $S$ is at most countably infinite).
+\item Each member of $M$ (primitive state mutations) can be represented by a finite formula (and thus $M$ is at most countably infinite).
+\item Each member of $C$ (primitive conditions) can be represented by a finite formula (and thus $C$ is at most countably infinite).
+\item The function $\delta_{1} : M \times S \rightarrow S$, which dictates how members of $M$ mutate members of $S$, is a Turing-computable function. 
+\item The function $\delta_{2} : C \times S \rightarrow \mathbb{B}$, which evaluates members of $C$ at given states in $S$, is a Turing-computable function.
+\end{itemize}
+
+Under these conditions the set of Generalized While programs is defined inductively as follows:
+
+\begin{itemize}
+\item The special program \texttt{pass} is a Generalized While program.
+\item Every member of $M$ is a Generalized While program.
+\item If $p_{1}$ and $p_{2}$ are Generalized While programs, then $p_{1}$ \texttt{;} $p_{2}$ is a generalized while program, where \texttt{;} is the sequencing operator.
+\item The special conditions \texttt{true} and \texttt{false} are conditions.
+\item Every member of $C$ is a condition.
+\item If $c_{1}$ and $c_{2}$ are conditions, then $c_{1}$ \texttt{\&\&} $c_{2}$, $c_{1}$ \texttt{||} $c_{2}$, and \texttt{!} $c_{1}$ are conditions.
+\item If $p_{1}$ and $p_{2}$ are Generalized While programs and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a Generalized While program.
+\item If $p$ is a Generalized While program and $c$ is a condition, then \texttt{while} $c$ \texttt{do} $p$ is a Generalized While program.
+\end{itemize}
+
+We notice that the inductive definition is typed, specifically, we distinguish between two types, conditions and programs.  Conditions occur as subformulas in programs.  In our definition above, the reverse is not true.
+
+\section{Evaluation of A Generalized While Program}
+
+A Generalized While program is evaluated by applying a sequence of reductions in the presence of a program state, which is a member of $S$.  Some special reductions change the program state, some are dependent on the program state.
+
+\begin{itemize}
+\item If $m$ is a member of $M$, then $m \rightarrow \texttt{pass}$, accompanied by a change to the program state where the current state $s$ is replaced by $s' = \delta_{1}(m, s)$.
+\item If $p$ is a program then $\texttt{pass;}p \rightarrow p$.
+\item If $p_{1}$ and $p_{2}$ are programs and $p_{1} \rightarrow p_{1}'$ then $p_{1}\texttt{;}p_{2} \rightarrow p_{1}'\texttt{;}p_{2}$.
+
+\item If $c$ is a member of $C$ then $c \rightarrow \delta_{2}(c, s)$.
+
+\item If $c$ is a condition then $\texttt{false||} c \rightarrow c$.
+\item If $c$ is a condition then $\texttt{true||} c \rightarrow \texttt{true}$.
+
+\item If $c$ is a condition then $\texttt{false\&\&} c \rightarrow \texttt{false}$.
+\item If $c$ is a condition then $\texttt{true\&\&} c \rightarrow c$.
+
+\item $\texttt{!true} \rightarrow \texttt{false}$
+\item $\texttt{!false} \rightarrow \texttt{true}$
+
+\item If $p_{1}$ and $p_{2}$ are programs and $c$ and $c'$ are conditions such that $c \rightarrow c'$ then $\texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \rightarrow \texttt{if } c' \texttt{ then } p_{1} \texttt{ else } p_{2}$.
+\item If $p_{1}$ and $p_{2}$ are programs then $\texttt{if true then } p_{1} \texttt{ else } p_{2} \rightarrow p_{1}$.
+\item If $p_{1}$ and $p_{2}$ are programs then $\texttt{if false then } p_{1} \texttt{ else } p_{2} \rightarrow p_{2}$.
+
+\item If $c$ is a condition and $p$ is a program then $\texttt{while } c \texttt{ do } p \rightarrow \texttt{if } c \texttt{ then (} p \texttt{; while } c \texttt{ do } p \texttt{) else pass}$.
+\end{itemize}
+
+We notice that all of these reductions are type preserving, a condition can only reduce to another condition and a program can only reduce to another program.  A condition cannot reduce to a program or vice versa.
+
+\section{Some Theorems about Evaluation}
+
+A term rewrite system is said to be deterministic if and only if every formula can be reduced to at most one new formula in a single reduction step, or stated equivalently, if $t$, $t'$ and $t''$ are formulas such that $t \rightarrow t'$ and $t \rightarrow t''$, then $t' = t''$.
+
+\newtheorem{determinism}{Theorem}
+\begin{determinism}
+The evaluation of a Generalized While program is deterministic.
+\end{determinism}
+
+\begin{proof}
+A determinism proof is accomplished by showing that if $t \rightarrow t'$ and $t \rightarrow t''$, then $t' = t''$.  More specifically, we proceed by cases, we use the symbol $t'$ to represent the right hand side of the reduction $t \rightarrow t'$ and for each rule we find a formula for the left hand side of the reduction, and show that it can only be reduced by applying that rule, implying that $t' = t''$.
+
+(TODO: Finish proof...)
+\end{proof}
+
+A formula is referred to as normal if and only if there is no rule that can reduce it.
+
+\newtheorem{passisnormal}{Theorem}
+\begin{passisnormal}
+The program \texttt{pass} is normal.
+\end{passisnormal}
+
+\begin{proof}
+(TODO: Do proof...)
+\end{proof}
+
+\newtheorem{passisuniquelynormal}{Theorem}
+\begin{passisuniquelynormal}
+No program except for \texttt{pass} is normal.
+\end{passisuniquelynormal}
+
+\begin{proof}
+(TODO: Do proof...)
+\end{proof}
+
+
+\section{Data Flow Analysis of A Generalized While Program}
+
+Let $P$ be a set of partitions of $S$ with the usual conditions, i.e., $P$ is pairwise disjoint and $\bigcup P = S$.  Let us assume the following:
+
+\begin{itemize}
+\item There is a computable function $\delta_{3} : M \times P \rightarrow \mathcal{P}(P)$.
+\item There is a computable function $\delta_{4} : C \times P \rightarrow \mathcal{P}(\mathbb{B})$
+\item $P$ is finite.
+\end{itemize}
+
+Then we can compute the function of type P $\rightarrow \mathcal{P}(P)$ that the program corresponds to.
+
+(TODO: Explain...)
+(IDEA: Define two forms, "expression form" and "control graph" form for Generalized While Program, explain these, explain how to interconvert)
+
+\section{Other Things}
+Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum 
+
+\end{document}
