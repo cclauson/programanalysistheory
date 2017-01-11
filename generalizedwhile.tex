@@ -85,7 +85,7 @@ $\texttt{!}c \rightarrow \texttt{!}c'$.
 
 In a term rewrite system a formula is said to be \emph{normal} if no rules can be applied to reduce it.
 
-\newtheorem{truefalsearenormal}{Theorem}
+\newtheorem*{truefalsearenormal}{Theorem}
 \begin{truefalsearenormal}
 The conditions \texttt{true} and \texttt{false} are normal.
 \end{truefalsearenormal}
@@ -96,7 +96,7 @@ The proof consist of looking through the rules and noticing that there are no re
 
 A term rewrite system is said to be \emph{deterministic} if and only if every formula can be reduced to at most one new formula in a single reduction step, or stated equivalently, if $t$, $t'$ and $t''$ are formulas such that $t \rightarrow t'$ and $t \rightarrow t''$, then $t' = t''$.
 
-\newtheorem{conditiondeterminism}{Theorem}
+\newtheorem*{conditiondeterminism}{Theorem}
 \begin{conditiondeterminism}
 The evaluation of a condition is deterministic.
 \end{conditiondeterminism}
@@ -113,33 +113,62 @@ A similar situations exists for the triples \textbf{CondRecurseAnd}, \textbf{Con
 
 \end{proof}
 
-(TODO: Prove that true and false are unique normals and that condition evaluation is normalizing, i.e., every condition evaluation terminates with a result of true or false.  This means that there is a computable function for evaluating conditions, we will define it and use it in program evaluation.)
+\newtheorem*{truefalseareuniquelynormal}{Theorem}
+\begin{truefalseareuniquelynormal}
+No conditions other than \texttt{true} or \texttt{false} are normal.
+\end{truefalseareuniquelynormal}
+
+\begin{proof}
+We prove this by structural induction.  Specifically, we will prove that each condition is either \texttt{true}, \texttt{false} or reducible.
+
+The base cases are \texttt{true}, \texttt{false} and primitive conditions, primitive conditions are reducible so clearly it's true here.
+
+If $c_{1}$ and $c_{2}$ are both conditions, and $c_{1}$ is either \texttt{true}, \texttt{false} or reducible, then clearly so is $c_{1}\texttt{||}c_{2}$ by \textbf{CondTrueOr}, \textbf{CondFalseOr} and \textbf{CondRecurseOr} respectively.
+
+Analogous reasoning applies to $c_{1}\texttt{\&\&}c_{2}$ and $\texttt{!}c_{1}$.
+\end{proof}
+
+A term rewrite system is said to be \emph{normalizing} if for every formula at most a finite number of reductions can be applied before reaching a normal form.
+
+\newtheorem*{conditionalsnormalizing}{Theorem}
+\begin{conditionalsnormalizing}
+Condition evaluation is normalizing.
+\end{conditionalsnormalizing}
+
+\begin{proof}
+We again prove by structural induction.
+
+The base cases are \texttt{true}, \texttt{false} and primitive conditions, \texttt{true}, \texttt{false} are already normal, and primitive conditions reduce to a normal in one reduction step.
+
+If $c_{1}$ and $c_{2}$ are both conditions which reduce to a normal in a finite number of steps, then to reduce $c_{1}\texttt{||}c_{2}$, we apply \textbf{CondRecurseOr} as many times as it takes to reduce $c_{1}$ to \texttt{true} or \texttt{false}.  If $c_{1}$ reduced to \texttt{true}, then we apply \textbf{CondTrueOr} and arrive at a normal.  Otherwise, we apply \textbf{CondFalseOr} to get $c_{2}$, which we then reduce to \texttt{true} or \texttt{false} in a finite number of steps.  We notice that the total number of steps is finite.
+
+Analogous reasoning applies to $c_{1}\texttt{\&\&}c_{2}$ and $\texttt{!}c_{1}$.
+\end{proof}
+
+Because conditional evaluation is deterministic and normalizing to the normals \texttt{true} and \texttt{false}, conditional evalution is an effective procedure, and gives a computable function from the set of conditions to the Boolean set $\mathbb{B}$.
+
+From this point we will use the symbol $D$ to denote the set of (non-primitive) conditions, and $\delta_{3} : D \times S \rightarrow \mathbb{B}$ to denote the computable function that maps conditions to $\mathbb{B}$.
 
 \subsection{Programs}
 
-A Generalized While program is evaluated by applying a sequence of reductions in the presence of a program state, which is a member of $S$.  Some special reductions change the program state, some are dependent on the program state.
+The evaluation rules for Generalized While program formulas also occur in the context of a program state from the set $S$, and are as follows.
 
 \begin{description}
 
+\item[EvalPrim] If $m$ is a member of $M$, then $m \rightarrow \texttt{pass}$, accompanied by a change to the program state where the current state $s$ is replaced by $s' = \delta_{1}(m, s)$.
+\item[PassElim] If $p$ is a program then $\texttt{pass;}p \rightarrow p$.
+\item[SeqRecurse] If $p_{1}$ and $p_{2}$ are programs and $p_{1} \rightarrow p_{1}'$ then $p_{1}\texttt{;}p_{2} \rightarrow p_{1}'\texttt{;}p_{2}$.
 
-\item[foo] If $m$ is a member of $M$, then $m \rightarrow \texttt{pass}$, accompanied by a change to the program state where the current state $s$ is replaced by $s' = \delta_{1}(m, s)$.
-\item[foo] If $p$ is a program then $\texttt{pass;}p \rightarrow p$.
-\item[foo] If $p_{1}$ and $p_{2}$ are programs and $p_{1} \rightarrow p_{1}'$ then $p_{1}\texttt{;}p_{2} \rightarrow p_{1}'\texttt{;}p_{2}$.
+\item[CondRecurse] If $p_{1}$ and $p_{2}$ are programs and $c$ and $c'$ are conditions such that $c \rightarrow c'$ then $\texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \rightarrow \texttt{if } c' \texttt{ then } p_{1} \texttt{ else } p_{2}$.
 
-\item[foo] If $p_{1}$ and $p_{2}$ are programs and $c$ and $c'$ are conditions such that $c \rightarrow c'$ then $\texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \rightarrow \texttt{if } c' \texttt{ then } p_{1} \texttt{ else } p_{2}$.
-\item[foo] If $p_{1}$ and $p_{2}$ are programs then $\texttt{if true then } p_{1} \texttt{ else } p_{2} \rightarrow p_{1}$.
-\item[foo] If $p_{1}$ and $p_{2}$ are programs then $\texttt{if false then } p_{1} \texttt{ else } p_{2} \rightarrow p_{2}$.
+\item[IfTrue] If $p_{1}$ and $p_{2}$ are programs then $\texttt{if true then } p_{1} \texttt{ else } p_{2} \rightarrow p_{1}$.
 
-\item[foo] If $c$ is a condition and $p$ is a program then \\ $\texttt{while } c \texttt{ do } p \rightarrow \texttt{if } c \texttt{ then (} p \texttt{; while } c \texttt{ do } p \texttt{) else pass}$.
+\item[IfFalse] If $p_{1}$ and $p_{2}$ are programs then $\texttt{if false then } p_{1} \texttt{ else } p_{2} \rightarrow p_{2}$.
+
+\item[WhileElim] If $c$ is a condition and $p$ is a program then \\ $\texttt{while } c \texttt{ do } p \rightarrow \texttt{if } c \texttt{ then (} p \texttt{; while } c \texttt{ do } p \texttt{) else pass}$.
 \end{description}
 
-We notice that all of these reductions are type preserving, a condition can only reduce to another condition and a program can only reduce to another program.  A condition cannot reduce to a program or vice versa.
-
-\section{Some Theorems about Evaluation}
-
-In a term rewrite system a formula is said to be normal if no rules can be applied to reduce it.
-
-\newtheorem{passisnormal}{Theorem}
+\newtheorem*{passisnormal}{Theorem}
 \begin{passisnormal}
 The program \texttt{pass} is normal.
 \end{passisnormal}
@@ -148,110 +177,16 @@ The program \texttt{pass} is normal.
 The proof consist of looking through the rules and noticing that there is no rule that applies to the program \texttt{pass}.
 \end{proof}
 
-A term rewrite system is said to be deterministic if and only if every formula can be reduced to at most one new formula in a single reduction step, or stated equivalently, if $t$, $t'$ and $t''$ are formulas such that $t \rightarrow t'$ and $t \rightarrow t''$, then $t' = t''$.
-
-\newtheorem{determinism}{Theorem}
+\newtheorem*{determinism}{Theorem}
 \begin{determinism}
 The evaluation of a Generalized While program is deterministic.
 \end{determinism}
 
 \begin{proof}
-
-A determinism proof is accomplished by showing that if $t \rightarrow t'$ and $t \rightarrow t''$, then $t' = t''$.  More specifically, we proceed by cases, we use the symbol $t'$ to represent the right hand side of the reduction $t \rightarrow t'$ and for each rule we find a formula for the left hand side of the reduction, and show that it can only be reduced by applying that rule, implying that $t' = t''$.
-
-\begin{itemize}
-
-\item
-\begin{enumerate}
-\item If $m$ is a member of $M$, then $m \rightarrow \texttt{pass}$, accompanied by a change to the program state where the current state $s$ is replaced by $s' = \delta_{1}(m, s)$.
-\item We note in this case that the left hand side of the reduction is a member of $M$, and no other rule can apply.
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $p$ is a program then $\texttt{pass;}p \rightarrow p$.
-\item The only other rule that might apply to the left hand side is one that allows us to reduce \texttt{pass} further, but since it's normal we can't do this.
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $p_{1}$ and $p_{2}$ are programs and $p_{1} \rightarrow p_{1}'$ then $p_{1}\texttt{;}p_{2} \rightarrow p_{1}'\texttt{;}p_{2}$.
-\item Similarly we notice that the only other rule that might apply is the elimination of \texttt{pass}, but because $p_{1} \rightarrow p_{1}'$ and \texttt{pass} is normal, this rule will never apply to such a program.
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $c$ is a member of $C$ then $c \rightarrow \delta_{2}(c, s)$.
-\item No other reduction rule exists for a primitive condition.
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $c$ is a condition then $\texttt{false||} c \rightarrow c$.
-\item foobar foobar foobar
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $c$ is a condition then $\texttt{true||} c \rightarrow \texttt{true}$.
-\item foobar foobar foobar
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $c$ is a condition then $\texttt{false\&\&} c \rightarrow \texttt{false}$.
-\item foobar foobar foobar
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $c$ is a condition then $\texttt{true\&\&} c \rightarrow c$.
-\item foobar foobar foobar
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item $\texttt{!true} \rightarrow \texttt{false}$
-\item foobar foobar foobar
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item $\texttt{!false} \rightarrow \texttt{true}$
-\item foobar foobar foobar
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $p_{1}$ and $p_{2}$ are programs and $c$ and $c'$ are conditions such that $c \rightarrow c'$ then $\texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \rightarrow \texttt{if } c' \texttt{ then } p_{1} \texttt{ else } p_{2}$.
-\item foobar foobar foobar
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $p_{1}$ and $p_{2}$ are programs then $\texttt{if true then } p_{1} \texttt{ else } p_{2} \rightarrow p_{1}$.
-\item foobar foobar foobar
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $p_{1}$ and $p_{2}$ are programs then $\texttt{if false then } p_{1} \texttt{ else } p_{2} \rightarrow p_{2}$.
-\item foobar foobar foobar
-\end{enumerate}
-
-\item
-\begin{enumerate}
-\item If $c$ is a condition and $p$ is a program then $\texttt{while } c \texttt{ do } p \rightarrow \texttt{if } c \texttt{ then (} p \texttt{; while } c \texttt{ do } p \texttt{) else pass}$.
-\item foobar foobar foobar
-\end{enumerate}
-
-\end{itemize}
-
+(TODO: PROVE)
 \end{proof}
 
-A formula is referred to as normal if and only if there is no rule that can reduce it.
-
-\newtheorem{passisuniquelynormal}{Theorem}
+\newtheorem*{passisuniquelynormal}{Theorem}
 \begin{passisuniquelynormal}
 No program except for \texttt{pass} is normal.
 \end{passisuniquelynormal}
@@ -280,3 +215,4 @@ Then we can compute the function of type P $\rightarrow \mathcal{P}(P)$ that the
 Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum 
 
 \end{document}
+
