@@ -7,13 +7,13 @@
 
 \begin{document}
 
-\title{Generalized While Programming Languages with Data Flow Analysis}
+\title{Branch Back Formalism for Programs with Data Flow Analysis}
 \author{C. E. Clauson}
 %\affiliation{Somewhere}
 \maketitle
 
 \begin{abstract}
-The While programming language has been defined in literature (source?).  In this paper we propose a class of programming languages called Generalized While languages, of which While is a specific case.  (Do we analyze anything?)
+We introduce a formula language, called "Branch Back", which is somewhat similar to but also more general than the While programming language which has been defined in literature (source?).  Branch Back is somewhat more general than a programming language, but is rather a class of languages, in which a program is a formula in the language. (TODO: Improve this)
 \end{abstract}
 
 \section{Introduction}
@@ -21,8 +21,8 @@ The While programming language has been defined in literature (source?).  In thi
 
 We use the symbol $\mathbb{B}$ to represent the Boolean set, which has the members \texttt{true} and \texttt{false}.
 
-\section{Generalized While}
-For a given quintuple $(S, M, C, \delta_{1}, \delta_{2})$, we define the set $GW(S, M, C, \delta_{1}, \delta_{2})$ as a set of formulas, under the following assumptions:
+\section{Branch Back}
+For a given sextuple $(S, M, C, \delta_{1}, \delta_{2}, L)$, we define the set $BB(S, M, C, \delta_{1}, \delta_{2}, L)$ as a set of formulas, under the following assumptions:
 
 \begin{itemize}
 \item Each member of $S$ (state set) is finitely representable (and thus $S$ is at most countably infinite).
@@ -30,26 +30,81 @@ For a given quintuple $(S, M, C, \delta_{1}, \delta_{2})$, we define the set $GW
 \item Each member of $C$ (primitive conditions) can be represented by a finite formula (and thus $C$ is at most countably infinite).
 \item The function $\delta_{1} : M \times S \rightarrow S$, which dictates how members of $M$ mutate members of $S$, is a Turing-computable function. 
 \item The function $\delta_{2} : C \times S \rightarrow \mathbb{B}$, which evaluates members of $C$ at given states in $S$, is a Turing-computable function.
+\item The set $L$ (label set) is countably infinite (and frequently assumed to be a set of strings over a reasonable alphabet).
 \end{itemize}
 
-Under these conditions the set of Generalized While programs is defined inductively as follows:
+
+We now inductively define the terminal and non-terminal program formulas open in $L_{O}$, where $L_{O} \subseteq L$:
 
 \begin{itemize}
-\item The special program \texttt{pass} is a Generalized While program.
-\item Every member of $M$ is a Generalized While program.
-\item If $p_{1}$ and $p_{2}$ are Generalized While programs, then $p_{1}$ \texttt{;} $p_{2}$ is a generalized while program, where \texttt{;} is the sequencing operator.
-\item The special conditions \texttt{true} and \texttt{false} are conditions.
-\item Every member of $C$ is a condition.
-\item If $c_{1}$ and $c_{2}$ are conditions, then $c_{1}$ \texttt{\&\&} $c_{2}$, $c_{1}$ \texttt{||} $c_{2}$, and \texttt{!} $c_{1}$ are conditions.
-\item If $p_{1}$ and $p_{2}$ are Generalized While programs and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a Generalized While program.
-\item If $p$ is a Generalized While program and $c$ is a condition, then \texttt{while} $c$ \texttt{do} $p$ is a Generalized While program.
+\item The special formula \texttt{pass} is a non-terminal program formula open in $\emptyset$, the empty set.
+\item Every member of $M$ is a non-terminal program formula open in $\emptyset$.
+\item If $p_{1}$ is a program formula open in $\emptyset$ and $p_{2}$ is a program formula open in $L_{O}$, then $p_{1} \texttt{;} p_{2}$ is a program formula open in $L_{O}$, where \texttt{;} is the sequencing operator.
+\item If $p_{1}$ and $p_{2}$ are programs and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a program.
+\item If $p$ is a program and $c$ is a condition, then \texttt{while} $c$ \texttt{do} $p$ is a program.
 \end{itemize}
 
 We notice that the inductive definition is typed, specifically, we distinguish between two types, conditions and programs.  Conditions occur as subformulas in programs.  In our definition above, the reverse is not true.
 
 \section{Evaluation of A Generalized While Program}
 
-\subsection{Conditions}
+The evaluation rules for Generalized While program formulas also occur in the context of a program state from the set $S$, and are as follows.
+
+\begin{description}
+
+\item[EvalPrim] If $m$ is a member of $M$, then $m \rightarrow \texttt{pass}$, accompanied by a change to the program state where the current state $s$ is replaced by $s' = \delta_{1}(m, s)$.
+\item[PassElim] If $p$ is a program then $\texttt{pass;}p \rightarrow p$.
+\item[SeqRecurse] If $p_{1}$ and $p_{2}$ are programs and $p_{1} \rightarrow p_{1}'$ then $p_{1}\texttt{;}p_{2} \rightarrow p_{1}'\texttt{;}p_{2}$.
+
+\item[CondRecurse] If $p_{1}$ and $p_{2}$ are programs and $c$ and $c'$ are conditions such that $c \rightarrow c'$ then $\texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \rightarrow \texttt{if } c' \texttt{ then } p_{1} \texttt{ else } p_{2}$.
+
+\item[IfTrue] If $p_{1}$ and $p_{2}$ are programs then $\texttt{if true then } p_{1} \texttt{ else } p_{2} \rightarrow p_{1}$.
+
+\item[IfFalse] If $p_{1}$ and $p_{2}$ are programs then $\texttt{if false then } p_{1} \texttt{ else } p_{2} \rightarrow p_{2}$.
+
+\item[WhileElim] If $c$ is a condition and $p$ is a program then \\ $\texttt{while } c \texttt{ do } p \rightarrow \texttt{if } c \texttt{ then (} p \texttt{; while } c \texttt{ do } p \texttt{) else pass}$.
+\end{description}
+
+\newtheorem*{passisnormal}{Theorem}
+\begin{passisnormal}
+The program \texttt{pass} is normal.
+\end{passisnormal}
+
+\begin{proof}
+The proof consist of looking through the rules and noticing that there is no rule that applies to the program \texttt{pass}.
+\end{proof}
+
+\newtheorem*{determinism}{Theorem}
+\begin{determinism}
+The evaluation of a Generalized While program is deterministic.
+\end{determinism}
+
+\begin{proof}
+(TODO: PROVE)
+\end{proof}
+
+\newtheorem*{passisuniquelynormal}{Theorem}
+\begin{passisuniquelynormal}
+No program except for \texttt{pass} is normal.
+\end{passisuniquelynormal}
+
+\begin{proof}
+(TODO: Do proof...)
+\end{proof}
+
+\section{Extensions}
+
+\subsection{Boolean Operators}
+
+(TODO: Revisit/rewrite/reorg this, originally this was part of the main development but probably it's better treated as an extension...)
+
+We start by inductively defining the set $D$ of \emph{(complex) conditions} in $BB(S, M, C, \delta_{1}, \delta_{2}, L)$ as follows:
+
+\begin{itemize}
+\item The special conditions \texttt{true} and \texttt{false} are conditions.
+\item Every member of $C$ is a condition.
+\item If $c_{1}$ and $c_{2}$ are conditions, then $c_{1} \texttt{\&\&} c_{2}$, $c_{1} \texttt{||} c_{2}$, and $\texttt{!} c_{1}$ are conditions.
+\end{itemize}
 
 We notice the following things:
 \begin{enumerate}
@@ -148,53 +203,6 @@ Analogous reasoning applies to $c_{1}\texttt{\&\&}c_{2}$ and $\texttt{!}c_{1}$.
 Because conditional evaluation is deterministic and normalizing to the normals \texttt{true} and \texttt{false}, conditional evalution is an effective procedure, and gives a computable function from the set of conditions to the Boolean set $\mathbb{B}$.
 
 From this point we will use the symbol $D$ to denote the set of (non-primitive) conditions, and $\delta_{3} : D \times S \rightarrow \mathbb{B}$ to denote the computable function that maps conditions to $\mathbb{B}$.
-
-\subsection{Programs}
-
-The evaluation rules for Generalized While program formulas also occur in the context of a program state from the set $S$, and are as follows.
-
-\begin{description}
-
-\item[EvalPrim] If $m$ is a member of $M$, then $m \rightarrow \texttt{pass}$, accompanied by a change to the program state where the current state $s$ is replaced by $s' = \delta_{1}(m, s)$.
-\item[PassElim] If $p$ is a program then $\texttt{pass;}p \rightarrow p$.
-\item[SeqRecurse] If $p_{1}$ and $p_{2}$ are programs and $p_{1} \rightarrow p_{1}'$ then $p_{1}\texttt{;}p_{2} \rightarrow p_{1}'\texttt{;}p_{2}$.
-
-\item[CondRecurse] If $p_{1}$ and $p_{2}$ are programs and $c$ and $c'$ are conditions such that $c \rightarrow c'$ then $\texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \rightarrow \texttt{if } c' \texttt{ then } p_{1} \texttt{ else } p_{2}$.
-
-\item[IfTrue] If $p_{1}$ and $p_{2}$ are programs then $\texttt{if true then } p_{1} \texttt{ else } p_{2} \rightarrow p_{1}$.
-
-\item[IfFalse] If $p_{1}$ and $p_{2}$ are programs then $\texttt{if false then } p_{1} \texttt{ else } p_{2} \rightarrow p_{2}$.
-
-\item[WhileElim] If $c$ is a condition and $p$ is a program then \\ $\texttt{while } c \texttt{ do } p \rightarrow \texttt{if } c \texttt{ then (} p \texttt{; while } c \texttt{ do } p \texttt{) else pass}$.
-\end{description}
-
-\newtheorem*{passisnormal}{Theorem}
-\begin{passisnormal}
-The program \texttt{pass} is normal.
-\end{passisnormal}
-
-\begin{proof}
-The proof consist of looking through the rules and noticing that there is no rule that applies to the program \texttt{pass}.
-\end{proof}
-
-\newtheorem*{determinism}{Theorem}
-\begin{determinism}
-The evaluation of a Generalized While program is deterministic.
-\end{determinism}
-
-\begin{proof}
-(TODO: PROVE)
-\end{proof}
-
-\newtheorem*{passisuniquelynormal}{Theorem}
-\begin{passisuniquelynormal}
-No program except for \texttt{pass} is normal.
-\end{passisuniquelynormal}
-
-\begin{proof}
-(TODO: Do proof...)
-\end{proof}
-
 
 \section{Data Flow Analysis of A Generalized While Program}
 
