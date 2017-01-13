@@ -7,7 +7,7 @@
 
 \begin{document}
 
-\title{Branch Back Formalism for Programs with Data Flow Analysis}
+\title{Branch Back Formalism for Programs}
 \author{C. E. Clauson}
 %\affiliation{Somewhere}
 \maketitle
@@ -17,9 +17,30 @@ We introduce a formula language, called "Branch Back", which is somewhat similar
 \end{abstract}
 
 \section{Introduction}
-(TODO: Put stuff here...)
+The motivation of Branch Back starts in the observation that many models and languages for programs are similar in having finite control, but differ in state external to that finite control, the mutations that the state can undergo, and the ways in which that state impacts the evolution of the program.
 
-We use the symbol $\mathbb{B}$ to represent the Boolean set, which has the members \texttt{true} and \texttt{false}.
+For example, a pushdown automaton relies on finite control coupled with a pushdown stack.  The control can push letters onto or pop letters off of the stack, and can branch based on the letter on the top of the stack.  A Turing machine, by contrast, relies on an infinite tape with a head.  This state external to the control can be modified by moving the head and writing a letter to the current position, and the control can test the letter currently under the head.
+
+Additional examples can be produced.  What we notice is that the various cases are similar in many respects, but differ in the following:
+
+\begin{itemize}
+\item The state space available to the program external to the finite control
+\item The set of operations the control can use to modify that state
+\item The set of operations the control can use to test the state for the purposes of branching
+\end{itemize}
+
+In the examples given above (pushdown automaton, Turing machine) the reader will be familiar with the finite control being described via an edge-weighted graph, where edges describe transitions and are weighted with conditions and state operations.  Program execution consists of transitioning through states beginning at a start state until some end state is reached (referred to later as a \emph{control flow graph}).
+
+Branch Back is a general formula language powerful enough to describe all programs possible in a paradigm with a given (state, mutator set, condition set) triple, while meeting the following goals:
+
+\begin{itemize}
+\item An exceedingly simple language definition
+\item Having an operational semantics based on a deterministic term rewrite system (i.e. similar to lambda calculus)
+\end{itemize}
+
+Branch Back will be shown to meet these criteria.  Proofs will be provided for equivalence between branch back formulas and control flow graphs, with algorithms for interconversion.
+
+The symbol $\mathbb{B}$ will be used to represent the Boolean set, which has the members \texttt{true} and \texttt{false}.
 
 \section{Branch Back}
 For a given sextuple $(S, M, C, \delta_{1}, \delta_{2}, L)$, we define the set $BB(S, M, C, \delta_{1}, \delta_{2}, L)$ as a set of formulas, under the following assumptions:
@@ -34,19 +55,23 @@ For a given sextuple $(S, M, C, \delta_{1}, \delta_{2}, L)$, we define the set $
 \end{itemize}
 
 
-We now inductively define the terminal and non-terminal program formulas open in $L_{O}$, where $L_{O} \subseteq L$:
+We now inductively define the program formulas open in $L_{O}$, where $L_{O} \subseteq L$:
 
 \begin{itemize}
-\item The special formula \texttt{pass} is a non-terminal program formula open in $\emptyset$, the empty set.
-\item Every member of $M$ is a non-terminal program formula open in $\emptyset$.
-\item If $p_{1}$ is a program formula open in $\emptyset$ and $p_{2}$ is a program formula open in $L_{O}$, then $p_{1} \texttt{;} p_{2}$ is a program formula open in $L_{O}$, where \texttt{;} is the sequencing operator.
-\item If $p_{1}$ and $p_{2}$ are programs and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a program.
-\item If $p$ is a program and $c$ is a condition, then \texttt{while} $c$ \texttt{do} $p$ is a program.
+\item The special formula \texttt{HALT} is a program formula open in $\emptyset$, the empty set.
+\item For every member $l$ of $L$ there exists a program formula $\texttt{branchback(}l\texttt{)}$ open in $\{l\}$, the singleton set containing only $l$.
+\item If $m$ is a member of $M$ and $p$ is a program formula open in $L_{O}$, then $m\texttt{;}p$ is a program formula open in $L_{O}$, where \texttt{;} is the sequencing operator.
+\item If $p_{1}$ is a program formula open in $L_{O,1}$, $p_{2}$ is a program formula open in $L_{O,2}$ and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a program formula open in $L_{O,1} \cup L_{O,2}$.
+\item If $l$ is a member of $L$ and $p$ is a program formula open in $L_{O}$, then $\texttt{label(}l\texttt{,} p\texttt{)}$ is a program formula open in $L_{O} \setminus \{l\}$, the set $L_{O}$ with $l$ removed.
 \end{itemize}
 
-We notice that the inductive definition is typed, specifically, we distinguish between two types, conditions and programs.  Conditions occur as subformulas in programs.  In our definition above, the reverse is not true.
+We define Branch Back program formulas to be exactly those program formulas which are open in the empty set.
 
-\section{Evaluation of A Generalized While Program}
+\section{Evaluation of A Branch Back Program}
+
+(TODO: Do this...)
+
+\begin{comment}
 
 The evaluation rules for Generalized While program formulas also occur in the context of a program state from the set $S$, and are as follows.
 
@@ -91,6 +116,8 @@ No program except for \texttt{pass} is normal.
 \begin{proof}
 (TODO: Do proof...)
 \end{proof}
+
+\end{comment}
 
 \section{Extensions}
 
@@ -196,13 +223,15 @@ We again prove by structural induction.
 The base cases are \texttt{true}, \texttt{false} and primitive conditions, \texttt{true}, \texttt{false} are already normal, and primitive conditions reduce to a normal in one reduction step.
 
 If $c_{1}$ and $c_{2}$ are both conditions which reduce to a normal in a finite number of steps, then to reduce $c_{1}\texttt{||}c_{2}$, we apply \textbf{CondRecurseOr} as many times as it takes to reduce $c_{1}$ to \texttt{true} or \texttt{false}.  If $c_{1}$ reduced to \texttt{true}, then we apply \textbf{CondTrueOr} and arrive at a normal.  Otherwise, we apply \textbf{CondFalseOr} to get $c_{2}$, which we then reduce to \texttt{true} or \texttt{false} in a finite number of steps.  We notice that the total number of steps is finite.
-
+-
 Analogous reasoning applies to $c_{1}\texttt{\&\&}c_{2}$ and $\texttt{!}c_{1}$.
 \end{proof}
 
 Because conditional evaluation is deterministic and normalizing to the normals \texttt{true} and \texttt{false}, conditional evalution is an effective procedure, and gives a computable function from the set of conditions to the Boolean set $\mathbb{B}$.
 
 From this point we will use the symbol $D$ to denote the set of (non-primitive) conditions, and $\delta_{3} : D \times S \rightarrow \mathbb{B}$ to denote the computable function that maps conditions to $\mathbb{B}$.
+
+\begin{comment}
 
 \section{Data Flow Analysis of A Generalized While Program}
 
@@ -221,6 +250,9 @@ Then we can compute the function of type P $\rightarrow \mathcal{P}(P)$ that the
 
 \section{Other Things}
 Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum 
+
+\end{comment}
+
 
 \end{document}
 
