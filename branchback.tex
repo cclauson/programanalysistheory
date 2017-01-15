@@ -43,33 +43,290 @@ Branch Back will be shown to meet these criteria.  Proofs will be provided for e
 The symbol $\mathbb{B}$ will be used to represent the Boolean set, which has the members \texttt{true} and \texttt{false}.
 
 \section{Branch Back}
-For a given sextuple $(S, M, C, \delta_{1}, \delta_{2}, L)$, we define the set $BB(S, M, C, \delta_{1}, \delta_{2}, L)$ as a set of formulas, under the following assumptions:
+For a given sextuple $(S, M, C, \delta_{M}, \delta_{C}, L)$, we define the set $BB(S, M, C, \delta_{M}, \delta_{C}, L)$ as a set of formulas, under the following assumptions:
 
 \begin{itemize}
 \item Each member of $S$ (state set) is finitely representable (and thus $S$ is at most countably infinite).
 \item Each member of $M$ (primitive state mutations) can be represented by a finite formula (and thus $M$ is at most countably infinite).
 \item Each member of $C$ (primitive conditions) can be represented by a finite formula (and thus $C$ is at most countably infinite).
-\item The function $\delta_{1} : M \times S \rightarrow S$, which dictates how members of $M$ mutate members of $S$, is a Turing-computable function. 
-\item The function $\delta_{2} : C \times S \rightarrow \mathbb{B}$, which evaluates members of $C$ at given states in $S$, is a Turing-computable function.
+\item The function $\delta_{M} : M \times S \rightarrow S$, which dictates how members of $M$ mutate members of $S$, is a (Turing-)computable function. 
+\item The function $\delta_{C} : C \times S \rightarrow \mathbb{B}$, which evaluates members of $C$ at given states in $S$, is a (Turing-)computable function.
 \item The set $L$ (label set) is countably infinite (and frequently assumed to be a set of strings over a reasonable alphabet).
 \end{itemize}
 
 
-We now inductively define the program formulas open in $L_{O}$, where $L_{O} \subseteq L$:
+We now inductively define the program formulas.  A given program formula is always \emph{open in} some (possibly empty) set contained in $L$, and also always \emph{immediately open in} some (possibly empty) set also contained in $L$.  The inductive definition is as follows:
+
+\begin{enumerate}
+\item The special formula \texttt{HALT} is a program formula open in $\emptyset$ and immediately open in $\emptyset$, where $\emptyset$ is the empty set.
+\item For every member $l$ of $L$ there exists a program formula $\texttt{branchback(}l\texttt{)}$ open in $\{l\}$ and immediately open in $\{l\}$, where $\{l\}$ is the singleton set containing only $l$.
+\item If $m$ is a member of $M$ and $p$ is a program formula open in $L_{O}$ and immediately open in $L_{OI}$, then $m\texttt{;}p$ is a program formula open in $L_{O}$ and immediately open in $\emptyset$, where \texttt{;} is the sequencing operator.
+\item If $p_{1}$ is a program formula open in $L_{O,1}$ and immediately open in $L_{OI,1}$, $p_{2}$ is a program formula open in $L_{O,2}$ and immediately open in $L_{OI,2}$, and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a program formula open in $L_{O,1} \cup L_{O,2}$ and immediately open in $\emptyset$.
+\item If $l$ is a member of $L$ and $p$ is a program formula open in $L_{O}$, immediately open in $L_{OI}$, and $l \notin L_{OI}$, then $\texttt{label(}l\texttt{,} p\texttt{)}$ is a program formula open in $L_{O} \setminus \{l\}$, the set $L_{O}$ with $l$ removed, and immediately open in $L_{OI}$.
+\end{enumerate}
+
+\newtheorem*{immedopencontainedinopen}{Theorem}
+\begin{immedopencontainedinopen}
+If $p$ is a program formula open in $L_{O}$ and immediately open in $L_{OI}$, then $L_{OI} \subseteq L_{O}$.
+\end{immedopencontainedinopen}
+
+\begin{proof}
+We prove by structural induction.  The base cases are \texttt{HALT} and the various $\texttt{branchback(}l\texttt{)}$ instances, for both of these $L_{OI} = L_{O}$ which implies $L_{OI} \subseteq L_{O}$.
+
+The cases $m\texttt{;}p$ and \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ are easily handled since in both $L_{OI} = \emptyset$, which is contained in every set.
+
+To treat $\texttt{label(}l\texttt{,} p\texttt{)}$, we use the inductive hypothesis, which lets us infer that $L_{OI} \subseteq L_{O}$, where $L_{O}$ and $L_{OI}$ are the sets in which $p$ is open and immediately open respectively.  To complete the inductive step we must show that $L_{OI} \subseteq L_{O} \setminus \{l\}$, but this easily follows from the requirement imposed by the inductive definition that $l \notin L_{OI}$.
+\end{proof}
+
+We define a program formula to be \emph{closed} if and only if it is open in $\emptyset$.
+
+\newtheorem*{closedimmedopeninempty}{Theorem}
+\begin{closedimmedopeninempty}
+If $p$ is a closed program formula then it is immediately open in $\emptyset$.
+\end{closedimmedopeninempty}
+
+\begin{proof}
+By definition, $p$ is open in $\emptyset$, therefore $L_{OI} \in \emptyset$.  But only $\emptyset$ is contained in $\emptyset$, therefore $L_{OI} = \emptyset$.
+\end{proof}
+
+We define Branch Back programs to be exactly those program formulas which are closed.
+
+\section{Execution of A Branch Back Program}
+
+From a high level, the effect of executing a branch back program is to change from one state in $S$ to another state in $S$, which will occur exactly if the program terminates, which it may or may not do.
+
+More specifically, execution occurs by forming a new kind of formula, an \emph{eval formula}, and applying term rewrite rules until no more can be applied.
+
+\subsection{Branch Back Substition for Program Formulas}
+
+Before looking at eval formulas, we will start by presenting a term rewrite rule for program formulas and analyzing the system using the singleton containing that rule.
+
+The rule is:
+
+\begin{description}
+\item[BranchBackSubst] $\texttt{label(}l\texttt{,} p\texttt{)} \longrightarrow [\texttt{branchback(}l\texttt{)} \mapsto \texttt{label(}l\texttt{,} p\texttt{)}]p$ (where the notation $[x \mapsto y]f$ denotes the formula $f$ with term $x$ everywhere replaced with the term $y$)
+\end{description}
+
+In a term rewrite system a formula is said to be \emph{normal} if no rules can be applied to reduce it.
+
+\newtheorem*{branchbacksubstnormals}{Theorem}
+\begin{branchbacksubstnormals}
+\texttt{HALT}, $\texttt{branchback(}l\texttt{)}$ for all $l \in L$, programs of form $m\texttt{;}p$ and of form \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ are exactly the normal formulas in \textbf{BranchBackSubst}.
+\end{branchbacksubstnormals}
+
+\begin{proof}
+The four cases listed are just exactly the cases of program formulas not of the form $\texttt{label(}l\texttt{,} p\texttt{)}$.  But since programs of the form $\texttt{label(}l\texttt{,} p\texttt{)}$ are exactly those to which \textbf{BranchBackSubst} can apply, we are done.
+\end{proof}
+
+
+A term rewrite system is said to be \emph{deterministic} if and only if every formula can be reduced to at most one new formula in a single reduction step, or stated equivalently, if $t$, $t'$ and $t''$ are formulas such that $t \rightarrow t'$ and $t \rightarrow t''$, then $t' = t''$.
+
+\newtheorem*{branchbacksubstisdeterministic}{Theorem}
+\begin{branchbacksubstisdeterministic}
+\textbf{BranchBackSubst} is deterministic.
+\end{branchbacksubstisdeterministic}
+
+\begin{proof}
+Because our system has only one reduction rule, it's a trivial result that for a given formula, at most one reduction rule can be applied to it.  Also, the rule \textbf{BranchBackSubst} can only be applied in one way to a given eligible formula, the way being dictated by the $l \in L$ in the \texttt{label()} at the root.
+\end{proof}
+
+A term rewrite system is said to be \emph{normalizing} if for every formula at most a finite number of reductions can be applied before reaching a normal form.
+
+\newtheorem*{branchbacksubstisnormalizing}{Theorem}
+\begin{branchbacksubstisnormalizing}
+\textbf{BranchBackSubst} is normalizing.
+\end{branchbacksubstisnormalizing}
+
+\begin{proof}
+(TODO: Do this proof)
+\end{proof}
+
+\newtheorem*{uniquenormal}{Lemma}
+\begin{uniquenormal}
+If a term rewrite system is both deterministic and normalizing, then every term in the system has a unique normal that corresponds to it, and which is computable.
+\end{uniquenormal}
+
+\begin{proof}
+(TODO: Do this proof)
+\end{proof}
+
+Because \textbf{BranchBackSubst} is both deterministic and normalizing, by the previous lemma each program formula has a unique normal form.  If $p$ is a program formula, we will use the notation $\mathcal{N}_{subst}(p)$ to denote the normal form of $p$ under \textbf{BranchBackSubst}.
+
+\newtheorem*{nsubstpreservesopenness}{Theorem}
+\begin{nsubstpreservesopenness}
+If $p$ is a program formula open in $L_{O}$ then $\mathcal{N}_{subst}(p)$ is also open in $L_{O}$.
+\end{nsubstpreservesopenness}
+
+\begin{proof}
+(TODO: Do this proof)
+\end{proof}
+
+\newtheorem*{openformulanormalforms}{Theorem}
+\begin{openformulanormalforms}
+If $p$ is a closed program formula then $\mathcal{N}_{subst}(p)$ is either \texttt{HALT}, of form $m\texttt{;}p$ or of form \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$.
+\end{openformulanormalforms}
+
+\begin{proof}
+The three cases listed here are exactly the four cases listed for normals of \textbf{BranchBackSubst}, minus $\texttt{branchback(}l\texttt{)}$.
+
+Since $p$ is closed and $\mathcal{N}_{subst}$ "preserves closedness," $\mathcal{N}_{subst}(p)$ is also closed.  But because by definition programs of the form $\texttt{branchback(}l\texttt{)}$ are open in ${l}$ and not closed, $\mathcal{N}_{subst}(p)$ cannot have the form $\texttt{branchback(}l\texttt{)}$.
+
+However, since \texttt{HALT} is always normal and formulas of the form $m\texttt{;}p$ or \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ can be normal they are possibilities for $\mathcal{N}_{subst}(p)$.
+\end{proof}
+
+\subsection{Eval Formulas and Reduction}
+
+We inductively define a new kind of formula, an eval formula, in the following way:
+
+\begin{enumerate}
+\item Every member of $S$ is an eval formula.
+\item If $s$ is a member of $S$ and $p$ is a closed program formula, then $\texttt{eval(}s\texttt{,} p\texttt{)}$ is an eval formula.
+\end{enumerate}
+
+(TODO: Present rewrite rules, prove normal forms and determinism, also prove not generally normalizing by showing a specific formula with assumptions about a condition and S)
+
+\section{Program Control Graphs}
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+\section{Equivalence of Branch Back and Program Control Graphs}
+
+(These are equivalent, we can actually algorithmically interconvert, this should be shown here)
+
+\section{Extensions}
+
+(Some principle should guide extensions, probably that every formula using an extension can be reducible to a formula not using extension, requisite proofs could be produced)
+
+\subsection{Terminal/Nonterminal Programs}
+
+(TODO: Basically we should be able to prepend an "if c then q1 else q2" to a program to avoid a large amount of repetition required by more naive approach, probably this can be done by typing programs as terminal/nonterminal)
+
+\subsection{Boolean Operators}
+
+(TODO: Revisit/rewrite/reorg this, originally this was part of the main development but probably it's better treated as an extension...)
+
+We start by inductively defining the set $D$ of \emph{(complex) conditions} in $BB(S, M, C, \delta_{1}, \delta_{2}, L)$ as follows:
 
 \begin{itemize}
-\item The special formula \texttt{HALT} is a program formula open in $\emptyset$, the empty set.
-\item For every member $l$ of $L$ there exists a program formula $\texttt{branchback(}l\texttt{)}$ open in $\{l\}$, the singleton set containing only $l$.
-\item If $m$ is a member of $M$ and $p$ is a program formula open in $L_{O}$, then $m\texttt{;}p$ is a program formula open in $L_{O}$, where \texttt{;} is the sequencing operator.
-\item If $p_{1}$ is a program formula open in $L_{O,1}$, $p_{2}$ is a program formula open in $L_{O,2}$ and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a program formula open in $L_{O,1} \cup L_{O,2}$.
-\item If $l$ is a member of $L$ and $p$ is a program formula open in $L_{O}$, then $\texttt{label(}l\texttt{,} p\texttt{)}$ is a program formula open in $L_{O} \setminus \{l\}$, the set $L_{O}$ with $l$ removed.
+\item The special conditions \texttt{true} and \texttt{false} are conditions.
+\item Every member of $C$ is a condition.
+\item If $c_{1}$ and $c_{2}$ are conditions, then $c_{1} \texttt{\&\&} c_{2}$, $c_{1} \texttt{||} c_{2}$, and $\texttt{!} c_{1}$ are conditions.
 \end{itemize}
 
-We define Branch Back program formulas to be exactly those program formulas which are open in the empty set.
+We notice the following things:
+\begin{enumerate}
+\item Program formulas can contain condition formulas, but not vice versa.
+\item The number of rules pertaining to condition evaluation is comparable in size to those for program evaluation.
+\item Condition evaluation can be shown to be simpler in certain mathematical respects than program evaluation.
+\end{enumerate}
 
-\section{Evaluation of A Branch Back Program}
+For these reasons we will describe and analyze condition evaluation here separately from program evaluation.  Note that while these could be done together, this approach makes things somewhat simpler.
 
-(TODO: Do this...)
+We define the following reduction rules for conditions:
+
+\begin{description}
+
+\item[CondPrim] If $c$ is a member of $C$ then $c \rightarrow \delta_{2}(c, s)$.
+
+\item[CondRecurseOr] If $c_{1}$, $c_{1}'$ and $c_{2}$ are conditions and $c_{1} \rightarrow c_{1}'$, then
+$c_{1}\texttt{||}c_{2} \rightarrow c_{1}'\texttt{||}c_{2}$.
+\item[CondFalseOr] If $c$ is a condition then $\texttt{false||} c \rightarrow c$.
+\item[CondTrueOr] If $c$ is a condition then $\texttt{true||} c \rightarrow \texttt{true}$.
+
+\item[CondRecurseAnd] If $c_{1}$, $c_{1}'$ and $c_{2}$ are conditions and $c_{1} \rightarrow c_{1}'$, then
+$c_{1}\texttt{\&\&}c_{2} \rightarrow c_{1}'\texttt{\&\&}c_{2}$.
+\item[CondFalseAnd] If $c$ is a condition then $\texttt{false\&\&} c \rightarrow \texttt{false}$.
+\item[CondTrueAnd] If $c$ is a condition then $\texttt{true\&\&} c \rightarrow c$.
+
+\item[CondRecurseNot] If $c$ and $c'$ are conditions and $c \rightarrow c'$, then
+$\texttt{!}c \rightarrow \texttt{!}c'$.
+\item[CondTrueNot] $\texttt{!true} \rightarrow \texttt{false}$
+\item[CondFalseNot] $\texttt{!false} \rightarrow \texttt{true}$
+
+\end{description}
+
+\newtheorem*{truefalsearenormal}{Theorem}
+\begin{truefalsearenormal}
+The conditions \texttt{true} and \texttt{false} are normal.
+\end{truefalsearenormal}
+
+\begin{proof}
+The proof consist of looking through the rules and noticing that there are no reduction rules that apply to the conditions \texttt{true} and \texttt{false}.
+\end{proof}
+
+\newtheorem*{conditiondeterminism}{Theorem}
+\begin{conditiondeterminism}
+The evaluation of a condition is deterministic.
+\end{conditiondeterminism}
+
+\begin{proof}
+
+A determinism proof is accomplished by showing that if $t \rightarrow t'$ and $t \rightarrow t''$, then $t' = t''$.  More specifically, we proceed by cases, we use the symbol $t'$ to represent the right hand side of the reduction $t \rightarrow t'$ and for each rule we find a formula for the left hand side of the reduction, and show that it can only be reduced by applying that rule, implying that $t' = t''$.
+
+\textbf{CondPrim} is the only rule that can apply to a primitive condition, i.e., a member of $C$.
+
+If a condition is an or (\texttt{||}), then only \textbf{CondRecurseOr}, \textbf{CondTrueOr} and \textbf{CondFalseOr} potentially apply.  Clearly \textbf{CondTrueOr} and \textbf{CondFalseOr} are mutually exclusive, since the first term of the or cannot be both true or false.  But since both true and false are normal, both are also exclusive with \textbf{CondRecurseOr}, so at most one of these three can apply.
+
+A similar situations exists for the triples \textbf{CondRecurseAnd}, \textbf{CondTrueAnd} and \textbf{CondFalseAnd}, and \textbf{CondRecurseNot}, \textbf{CondTrueNot} and \textbf{CondFalseNot}.
+
+\end{proof}
+
+\newtheorem*{truefalseareuniquelynormal}{Theorem}
+\begin{truefalseareuniquelynormal}
+No conditions other than \texttt{true} or \texttt{false} are normal.
+\end{truefalseareuniquelynormal}
+
+\begin{proof}
+We prove this by structural induction.  Specifically, we will prove that each condition is either \texttt{true}, \texttt{false} or reducible.
+
+The base cases are \texttt{true}, \texttt{false} and primitive conditions, primitive conditions are reducible so clearly it's true here.
+
+If $c_{1}$ and $c_{2}$ are both conditions, and $c_{1}$ is either \texttt{true}, \texttt{false} or reducible, then clearly so is $c_{1}\texttt{||}c_{2}$ by \textbf{CondTrueOr}, \textbf{CondFalseOr} and \textbf{CondRecurseOr} respectively.
+
+Analogous reasoning applies to $c_{1}\texttt{\&\&}c_{2}$ and $\texttt{!}c_{1}$.
+\end{proof}
+
+\newtheorem*{conditionalsnormalizing}{Theorem}
+\begin{conditionalsnormalizing}
+Condition evaluation is normalizing.
+\end{conditionalsnormalizing}
+
+\begin{proof}
+We again prove by structural induction.
+
+The base cases are \texttt{true}, \texttt{false} and primitive conditions, \texttt{true}, \texttt{false} are already normal, and primitive conditions reduce to a normal in one reduction step.
+
+If $c_{1}$ and $c_{2}$ are both conditions which reduce to a normal in a finite number of steps, then to reduce $c_{1}\texttt{||}c_{2}$, we apply \textbf{CondRecurseOr} as many times as it takes to reduce $c_{1}$ to \texttt{true} or \texttt{false}.  If $c_{1}$ reduced to \texttt{true}, then we apply \textbf{CondTrueOr} and arrive at a normal.  Otherwise, we apply \textbf{CondFalseOr} to get $c_{2}$, which we then reduce to \texttt{true} or \texttt{false} in a finite number of steps.  We notice that the total number of steps is finite.
+-
+Analogous reasoning applies to $c_{1}\texttt{\&\&}c_{2}$ and $\texttt{!}c_{1}$.
+\end{proof}
+
+Because conditional evaluation is deterministic and normalizing to the normals \texttt{true} and \texttt{false}, conditional evalution is an effective procedure, and gives a computable function from the set of conditions to the Boolean set $\mathbb{B}$.
+
+From this point we will use the symbol $D$ to denote the set of (non-primitive) conditions, and $\delta_{3} : D \times S \rightarrow \mathbb{B}$ to denote the computable function that maps conditions to $\mathbb{B}$.
+
+\begin{comment}
+
+\section{Data Flow Analysis of A Generalized While Program}
+
+Let $P$ be a set of partitions of $S$ with the usual conditions, i.e., $P$ is pairwise disjoint and $\bigcup P = S$.  Let us assume the following:
+
+\begin{itemize}
+\item There is a computable function $\delta_{3} : M \times P \rightarrow \mathcal{P}(P)$.
+\item There is a computable function $\delta_{4} : C \times P \rightarrow \mathcal{P}(\mathbb{B})$
+\item $P$ is finite.
+\end{itemize}
+
+Then we can compute the function of type P $\rightarrow \mathcal{P}(P)$ that the program corresponds to.
+
+(TODO: Explain...)
+(IDEA: Define two forms, "expression form" and "control graph" form for Generalized While Program, explain these, explain how to interconvert)
+
+\section{Other Things}
+Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum 
+
+\end{comment}
+
 
 \begin{comment}
 
@@ -116,140 +373,6 @@ No program except for \texttt{pass} is normal.
 \begin{proof}
 (TODO: Do proof...)
 \end{proof}
-
-\end{comment}
-
-\section{Extensions}
-
-\subsection{Boolean Operators}
-
-(TODO: Revisit/rewrite/reorg this, originally this was part of the main development but probably it's better treated as an extension...)
-
-We start by inductively defining the set $D$ of \emph{(complex) conditions} in $BB(S, M, C, \delta_{1}, \delta_{2}, L)$ as follows:
-
-\begin{itemize}
-\item The special conditions \texttt{true} and \texttt{false} are conditions.
-\item Every member of $C$ is a condition.
-\item If $c_{1}$ and $c_{2}$ are conditions, then $c_{1} \texttt{\&\&} c_{2}$, $c_{1} \texttt{||} c_{2}$, and $\texttt{!} c_{1}$ are conditions.
-\end{itemize}
-
-We notice the following things:
-\begin{enumerate}
-\item Program formulas can contain condition formulas, but not vice versa.
-\item The number of rules pertaining to condition evaluation is comparable in size to those for program evaluation.
-\item Condition evaluation can be shown to be simpler in certain mathematical respects than program evaluation.
-\end{enumerate}
-
-For these reasons we will describe and analyze condition evaluation here separately from program evaluation.  Note that while these could be done together, this approach makes things somewhat simpler.
-
-We define the following reduction rules for conditions:
-
-\begin{description}
-
-\item[CondPrim] If $c$ is a member of $C$ then $c \rightarrow \delta_{2}(c, s)$.
-
-\item[CondRecurseOr] If $c_{1}$, $c_{1}'$ and $c_{2}$ are conditions and $c_{1} \rightarrow c_{1}'$, then
-$c_{1}\texttt{||}c_{2} \rightarrow c_{1}'\texttt{||}c_{2}$.
-\item[CondFalseOr] If $c$ is a condition then $\texttt{false||} c \rightarrow c$.
-\item[CondTrueOr] If $c$ is a condition then $\texttt{true||} c \rightarrow \texttt{true}$.
-
-\item[CondRecurseAnd] If $c_{1}$, $c_{1}'$ and $c_{2}$ are conditions and $c_{1} \rightarrow c_{1}'$, then
-$c_{1}\texttt{\&\&}c_{2} \rightarrow c_{1}'\texttt{\&\&}c_{2}$.
-\item[CondFalseAnd] If $c$ is a condition then $\texttt{false\&\&} c \rightarrow \texttt{false}$.
-\item[CondTrueAnd] If $c$ is a condition then $\texttt{true\&\&} c \rightarrow c$.
-
-\item[CondRecurseNot] If $c$ and $c'$ are conditions and $c \rightarrow c'$, then
-$\texttt{!}c \rightarrow \texttt{!}c'$.
-\item[CondTrueNot] $\texttt{!true} \rightarrow \texttt{false}$
-\item[CondFalseNot] $\texttt{!false} \rightarrow \texttt{true}$
-
-\end{description}
-
-In a term rewrite system a formula is said to be \emph{normal} if no rules can be applied to reduce it.
-
-\newtheorem*{truefalsearenormal}{Theorem}
-\begin{truefalsearenormal}
-The conditions \texttt{true} and \texttt{false} are normal.
-\end{truefalsearenormal}
-
-\begin{proof}
-The proof consist of looking through the rules and noticing that there are no reduction rules that apply to the conditions \texttt{true} and \texttt{false}.
-\end{proof}
-
-A term rewrite system is said to be \emph{deterministic} if and only if every formula can be reduced to at most one new formula in a single reduction step, or stated equivalently, if $t$, $t'$ and $t''$ are formulas such that $t \rightarrow t'$ and $t \rightarrow t''$, then $t' = t''$.
-
-\newtheorem*{conditiondeterminism}{Theorem}
-\begin{conditiondeterminism}
-The evaluation of a condition is deterministic.
-\end{conditiondeterminism}
-
-\begin{proof}
-
-A determinism proof is accomplished by showing that if $t \rightarrow t'$ and $t \rightarrow t''$, then $t' = t''$.  More specifically, we proceed by cases, we use the symbol $t'$ to represent the right hand side of the reduction $t \rightarrow t'$ and for each rule we find a formula for the left hand side of the reduction, and show that it can only be reduced by applying that rule, implying that $t' = t''$.
-
-\textbf{CondPrim} is the only rule that can apply to a primitive condition, i.e., a member of $C$.
-
-If a condition is an or (\texttt{||}), then only \textbf{CondRecurseOr}, \textbf{CondTrueOr} and \textbf{CondFalseOr} potentially apply.  Clearly \textbf{CondTrueOr} and \textbf{CondFalseOr} are mutually exclusive, since the first term of the or cannot be both true or false.  But since both true and false are normal, both are also exclusive with \textbf{CondRecurseOr}, so at most one of these three can apply.
-
-A similar situations exists for the triples \textbf{CondRecurseAnd}, \textbf{CondTrueAnd} and \textbf{CondFalseAnd}, and \textbf{CondRecurseNot}, \textbf{CondTrueNot} and \textbf{CondFalseNot}.
-
-\end{proof}
-
-\newtheorem*{truefalseareuniquelynormal}{Theorem}
-\begin{truefalseareuniquelynormal}
-No conditions other than \texttt{true} or \texttt{false} are normal.
-\end{truefalseareuniquelynormal}
-
-\begin{proof}
-We prove this by structural induction.  Specifically, we will prove that each condition is either \texttt{true}, \texttt{false} or reducible.
-
-The base cases are \texttt{true}, \texttt{false} and primitive conditions, primitive conditions are reducible so clearly it's true here.
-
-If $c_{1}$ and $c_{2}$ are both conditions, and $c_{1}$ is either \texttt{true}, \texttt{false} or reducible, then clearly so is $c_{1}\texttt{||}c_{2}$ by \textbf{CondTrueOr}, \textbf{CondFalseOr} and \textbf{CondRecurseOr} respectively.
-
-Analogous reasoning applies to $c_{1}\texttt{\&\&}c_{2}$ and $\texttt{!}c_{1}$.
-\end{proof}
-
-A term rewrite system is said to be \emph{normalizing} if for every formula at most a finite number of reductions can be applied before reaching a normal form.
-
-\newtheorem*{conditionalsnormalizing}{Theorem}
-\begin{conditionalsnormalizing}
-Condition evaluation is normalizing.
-\end{conditionalsnormalizing}
-
-\begin{proof}
-We again prove by structural induction.
-
-The base cases are \texttt{true}, \texttt{false} and primitive conditions, \texttt{true}, \texttt{false} are already normal, and primitive conditions reduce to a normal in one reduction step.
-
-If $c_{1}$ and $c_{2}$ are both conditions which reduce to a normal in a finite number of steps, then to reduce $c_{1}\texttt{||}c_{2}$, we apply \textbf{CondRecurseOr} as many times as it takes to reduce $c_{1}$ to \texttt{true} or \texttt{false}.  If $c_{1}$ reduced to \texttt{true}, then we apply \textbf{CondTrueOr} and arrive at a normal.  Otherwise, we apply \textbf{CondFalseOr} to get $c_{2}$, which we then reduce to \texttt{true} or \texttt{false} in a finite number of steps.  We notice that the total number of steps is finite.
--
-Analogous reasoning applies to $c_{1}\texttt{\&\&}c_{2}$ and $\texttt{!}c_{1}$.
-\end{proof}
-
-Because conditional evaluation is deterministic and normalizing to the normals \texttt{true} and \texttt{false}, conditional evalution is an effective procedure, and gives a computable function from the set of conditions to the Boolean set $\mathbb{B}$.
-
-From this point we will use the symbol $D$ to denote the set of (non-primitive) conditions, and $\delta_{3} : D \times S \rightarrow \mathbb{B}$ to denote the computable function that maps conditions to $\mathbb{B}$.
-
-\begin{comment}
-
-\section{Data Flow Analysis of A Generalized While Program}
-
-Let $P$ be a set of partitions of $S$ with the usual conditions, i.e., $P$ is pairwise disjoint and $\bigcup P = S$.  Let us assume the following:
-
-\begin{itemize}
-\item There is a computable function $\delta_{3} : M \times P \rightarrow \mathcal{P}(P)$.
-\item There is a computable function $\delta_{4} : C \times P \rightarrow \mathcal{P}(\mathbb{B})$
-\item $P$ is finite.
-\end{itemize}
-
-Then we can compute the function of type P $\rightarrow \mathcal{P}(P)$ that the program corresponds to.
-
-(TODO: Explain...)
-(IDEA: Define two forms, "expression form" and "control graph" form for Generalized While Program, explain these, explain how to interconvert)
-
-\section{Other Things}
-Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum 
 
 \end{comment}
 
