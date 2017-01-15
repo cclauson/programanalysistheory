@@ -43,7 +43,7 @@ Branch Back will be shown to meet these criteria.  Proofs will be provided for e
 The symbol $\mathbb{B}$ will be used to represent the Boolean set, which has the members \texttt{true} and \texttt{false}.
 
 \section{Branch Back}
-For a given sextuple $(S, M, C, \delta_{M}, \delta_{C}, L)$, we define the set $BB(S, M, C, \delta_{M}, \delta_{C}, L)$ as a set of formulas, under the following assumptions:
+For a given sextuple $(S, M, C, \delta_{M}, \delta_{C})$, we define the set $BB(S, M, C, \delta_{M}, \delta_{C})$ as a set of formulas, under the following assumptions:
 
 \begin{itemize}
 \item Each member of $S$ (state set) is finitely representable (and thus $S$ is at most countably infinite).
@@ -51,9 +51,9 @@ For a given sextuple $(S, M, C, \delta_{M}, \delta_{C}, L)$, we define the set $
 \item Each member of $C$ (primitive conditions) can be represented by a finite formula (and thus $C$ is at most countably infinite).
 \item The function $\delta_{M} : M \times S \rightarrow S$, which dictates how members of $M$ mutate members of $S$, is a (Turing-)computable function. 
 \item The function $\delta_{C} : C \times S \rightarrow \mathbb{B}$, which evaluates members of $C$ at given states in $S$, is a (Turing-)computable function.
-\item The set $L$ (label set) is countably infinite (and frequently assumed to be a set of strings over a reasonable alphabet).
 \end{itemize}
 
+Additionally, we assume that there exists a set $L$, the label set, which is countably infinite.
 
 We now inductively define the program formulas.  A given program formula is always \emph{open in} some (possibly empty) set contained in $L$, and also always \emph{immediately open in} some (possibly empty) set also contained in $L$.  The inductive definition is as follows:
 
