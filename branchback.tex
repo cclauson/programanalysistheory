@@ -187,8 +187,8 @@ Reduction rules are as follows:
 
 \begin{description}
 \item[BranchBackSubst] If $p$ is a program formula such that $p \neq \mathcal{N}_{subst}(p)$, then $\texttt{eval(}s\texttt{,} p\texttt{)} \longrightarrow \texttt{eval(}s\texttt{,} \mathcal{N}_{subst}(p)\texttt{)}$.
-\item[IfTrue] If $p1$ and $p2$ are program formulas, $s$ is a member of $S$ and $c$ is a member of $C$ such that $\delta_{C}(c, s) = \texttt{true}$ then \\ $\texttt{eval(} s \texttt{, } \texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \texttt{)} \longrightarrow \texttt{eval(} s \texttt{, } p_{1} \texttt{)}$.
-\item[IfFalse] If $p1$ and $p2$ are program formulas, $s$ is a member of $S$ and $c$ is a member of $C$ such that $\delta_{C}(c, s) = \texttt{false}$ then \\ $\texttt{eval(} s \texttt{, } \texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \texttt{)} \longrightarrow \texttt{eval(} s \texttt{, } p_{2} \texttt{)}$.
+\item[IfTrue] If $p_{1}$ and $p_{2}$ are program formulas, $s$ is a member of $S$ and $c$ is a member of $C$ such that $\delta_{C}(c, s) = \texttt{true}$ then \\ $\texttt{eval(} s \texttt{, } \texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \texttt{)} \longrightarrow \texttt{eval(} s \texttt{, } p_{1} \texttt{)}$.
+\item[IfFalse] If $p_{1}$ and $p_{2}$ are program formulas, $s$ is a member of $S$ and $c$ is a member of $C$ such that $\delta_{C}(c, s) = \texttt{false}$ then \\ $\texttt{eval(} s \texttt{, } \texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \texttt{)} \longrightarrow \texttt{eval(} s \texttt{, } p_{2} \texttt{)}$.
 \item[MAppl] $\texttt{eval(}s\texttt{, } m\texttt{;}p \texttt{)} \longrightarrow \texttt{eval(} \delta_{M}(m, s)\texttt{, } p \texttt{)}$
 \item[Halt] $\texttt{eval(}s\texttt{, } \texttt{HALT)} \longrightarrow s$
 \end{description}
@@ -207,6 +207,10 @@ Reduction rules are as follows:
 \section{Extensions}
 
 (Some principle should guide extensions, probably that every formula using an extension can be reducible to a formula not using extension, requisite proofs could be produced)
+
+\subsection{While Loops}
+
+(TODO: This should be easy)
 
 \subsection{Terminal/Nonterminal Programs}
 
