@@ -104,18 +104,18 @@ Before looking at eval formulas, we will start by presenting a term rewrite rule
 The rule is:
 
 \begin{description}
-\item[BranchBackSubst] $\texttt{label(}l\texttt{,} p\texttt{)} \longrightarrow [\texttt{branchback(}l\texttt{)} \mapsto \texttt{label(}l\texttt{,} p\texttt{)}]p$ (where the notation $[x \mapsto y]f$ denotes the formula $f$ with term $x$ everywhere replaced with the term $y$)
+\item[BranchBackSubstProg] $\texttt{label(}l\texttt{,} p\texttt{)} \longrightarrow [\texttt{branchback(}l\texttt{)} \mapsto \texttt{label(}l\texttt{,} p\texttt{)}]p$ (where the notation $[x \mapsto y]f$ denotes the formula $f$ with term $x$ everywhere replaced with the term $y$)
 \end{description}
 
 In a term rewrite system a formula is said to be \emph{normal} if no rules can be applied to reduce it.
 
 \newtheorem*{branchbacksubstnormals}{Theorem}
 \begin{branchbacksubstnormals}
-\texttt{HALT}, $\texttt{branchback(}l\texttt{)}$ for all $l \in L$, programs of form $m\texttt{;}p$ and of form \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ are exactly the normal formulas in \textbf{BranchBackSubst}.
+\texttt{HALT}, $\texttt{branchback(}l\texttt{)}$ for all $l \in L$, programs of form $m\texttt{;}p$ and of form \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ are exactly the normal formulas in \textbf{BranchBackSubstProg}.
 \end{branchbacksubstnormals}
 
 \begin{proof}
-The four cases listed are just exactly the cases of program formulas not of the form $\texttt{label(}l\texttt{,} p\texttt{)}$.  But since programs of the form $\texttt{label(}l\texttt{,} p\texttt{)}$ are exactly those to which \textbf{BranchBackSubst} can apply, we are done.
+The four cases listed are just exactly the cases of program formulas not of the form $\texttt{label(}l\texttt{,} p\texttt{)}$.  But since programs of the form $\texttt{label(}l\texttt{,} p\texttt{)}$ are exactly those to which \textbf{BranchBackSubstProg} can apply, we are done.
 \end{proof}
 
 
@@ -123,18 +123,18 @@ A term rewrite system is said to be \emph{deterministic} if and only if every fo
 
 \newtheorem*{branchbacksubstisdeterministic}{Theorem}
 \begin{branchbacksubstisdeterministic}
-\textbf{BranchBackSubst} is deterministic.
+\textbf{BranchBackSubstProg} is deterministic.
 \end{branchbacksubstisdeterministic}
 
 \begin{proof}
-Because our system has only one reduction rule, it's a trivial result that for a given formula, at most one reduction rule can be applied to it.  Also, the rule \textbf{BranchBackSubst} can only be applied in one way to a given eligible formula, the way being dictated by the $l \in L$ in the \texttt{label()} at the root.
+Because our system has only one reduction rule, it's a trivial result that for a given formula, at most one reduction rule can be applied to it.  Also, the rule \textbf{BranchBackSubstProg} can only be applied in one way to a given eligible formula, the way being dictated by the $l \in L$ in the \texttt{label()} at the root.
 \end{proof}
 
 A term rewrite system is said to be \emph{normalizing} if for every formula at most a finite number of reductions can be applied before reaching a normal form.
 
 \newtheorem*{branchbacksubstisnormalizing}{Theorem}
 \begin{branchbacksubstisnormalizing}
-\textbf{BranchBackSubst} is normalizing.
+\textbf{BranchBackSubstProg} is normalizing.
 \end{branchbacksubstisnormalizing}
 
 \begin{proof}
@@ -150,7 +150,7 @@ If a term rewrite system is both deterministic and normalizing, then every term 
 (TODO: Do this proof)
 \end{proof}
 
-Because \textbf{BranchBackSubst} is both deterministic and normalizing, by the previous lemma each program formula has a unique normal form.  If $p$ is a program formula, we will use the notation $\mathcal{N}_{subst}(p)$ to denote the normal form of $p$ under \textbf{BranchBackSubst}.
+Because \textbf{BranchBackSubstProg} is both deterministic and normalizing, by the previous lemma each program formula has a unique normal form.  If $p$ is a program formula, we will use the notation $\mathcal{N}_{subst}(p)$ to denote the normal form of $p$ under \textbf{BranchBackSubstProg}.
 
 \newtheorem*{nsubstpreservesopenness}{Theorem}
 \begin{nsubstpreservesopenness}
@@ -167,7 +167,7 @@ If $p$ is a closed program formula then $\mathcal{N}_{subst}(p)$ is either \text
 \end{openformulanormalforms}
 
 \begin{proof}
-The three cases listed here are exactly the four cases listed for normals of \textbf{BranchBackSubst}, minus $\texttt{branchback(}l\texttt{)}$.
+The three cases listed here are exactly the four cases listed for normals of \textbf{BranchBackSubstProg}, minus $\texttt{branchback(}l\texttt{)}$.
 
 Since $p$ is closed and $\mathcal{N}_{subst}$ "preserves closedness," $\mathcal{N}_{subst}(p)$ is also closed.  But because by definition programs of the form $\texttt{branchback(}l\texttt{)}$ are open in ${l}$ and not closed, $\mathcal{N}_{subst}(p)$ cannot have the form $\texttt{branchback(}l\texttt{)}$.
 
@@ -176,14 +176,25 @@ However, since \texttt{HALT} is always normal and formulas of the form $m\texttt
 
 \subsection{Eval Formulas and Reduction}
 
-We inductively define a new kind of formula, an eval formula, in the following way:
+We inductively define a new kind of formula, an \emph{eval formula}, in the following way:
 
 \begin{enumerate}
 \item Every member of $S$ is an eval formula.
 \item If $s$ is a member of $S$ and $p$ is a closed program formula, then $\texttt{eval(}s\texttt{,} p\texttt{)}$ is an eval formula.
 \end{enumerate}
 
-(TODO: Present rewrite rules, prove normal forms and determinism, also prove not generally normalizing by showing a specific formula with assumptions about a condition and S)
+Reduction rules are as follows:
+
+\begin{description}
+\item[BranchBackSubst] If $p$ is a program formula such that $p \neq \mathcal{N}_{subst}(p)$, then $\texttt{eval(}s\texttt{,} p\texttt{)} \longrightarrow \texttt{eval(}s\texttt{,} \mathcal{N}_{subst}(p)\texttt{)}$.
+\item[IfTrue] If $p1$ and $p2$ are program formulas, $s$ is a member of $S$ and $c$ is a member of $C$ such that $\delta_{C}(c, s) = \texttt{true}$ then \\ $\texttt{eval(} s \texttt{, } \texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \texttt{)} \longrightarrow \texttt{eval(} s \texttt{, } p_{1} \texttt{)}$.
+\item[IfFalse] If $p1$ and $p2$ are program formulas, $s$ is a member of $S$ and $c$ is a member of $C$ such that $\delta_{C}(c, s) = \texttt{false}$ then \\ $\texttt{eval(} s \texttt{, } \texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2} \texttt{)} \longrightarrow \texttt{eval(} s \texttt{, } p_{2} \texttt{)}$.
+\item[MAppl] $\texttt{eval(}s\texttt{, } m\texttt{;}p \texttt{)} \longrightarrow \texttt{eval(} \delta_{M}(m, s)\texttt{, } p \texttt{)}$
+\item[Halt] $\texttt{eval(}s\texttt{, } \texttt{HALT)} \longrightarrow s$
+\end{description}
+
+
+(TODO: prove normal forms and determinism, also prove not generally normalizing by showing a specific formula with assumptions about a condition and S)
 
 \section{Program Control Graphs}
 
