@@ -123,7 +123,6 @@ In a term rewrite system a formula is said to be \emph{normal} if no rules can b
 The four cases listed are just exactly the cases of program formulas not of the form $\texttt{label(}l\texttt{,} p\texttt{)}$.  But since programs of the form $\texttt{label(}l\texttt{,} p\texttt{)}$ are exactly those to which \textbf{BranchBackSubstProg} can apply, we are done.
 \end{proof}
 
-
 A term rewrite system is said to be \emph{deterministic} if and only if every formula can be reduced to at most one new formula in a single reduction step, or stated equivalently, if $t$, $t'$ and $t''$ are formulas such that $t \rightarrow t'$ and $t \rightarrow t''$, then $t' = t''$.
 
 \newtheorem*{branchbacksubstisdeterministic}{Theorem}
@@ -168,12 +167,15 @@ But this is immediate.  If $q_{1}$ is normal, then $\texttt{label(}l_{i}\texttt{
 \newtheorem*{bbspnorecurse}{Lemma}
 \begin{bbspnorecurse}
 If
-$\texttt{label(}l_{1}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{3}\texttt{,}  ... \texttt{label(}l_{n}\texttt{,} p\texttt{)} ... \texttt{)}\texttt{)}\texttt{)}$ reduces to\\
-$\texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{3}\texttt{,}  ... \texttt{label(}l_{n}\texttt{,} p'\texttt{)} ... \texttt{)}\texttt{)}$ via \textbf{BranchBackSubstProg}, and $p$ is normal, then $p'$ is also normal.
+$\texttt{label(}l_{n}\texttt{,}\texttt{label(}l_{n - 1}\texttt{,} ... \texttt{label(}l_{3}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p\texttt{)}\texttt{)}\texttt{)} ... \texttt{)}\texttt{)}$ reduces to\\
+$\texttt{label(}l_{n - 1}\texttt{,} ... \texttt{label(}l_{3}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p'\texttt{)}\texttt{)}\texttt{)} ... \texttt{)}$ via \textbf{BranchBackSubstProg}, and $p$ is normal, then $p'$ is also normal.
 \end{bbspnorecurse}
 
 \begin{proof}
-(TODO: Prove this, this is where we need the concept of "immediate openness")
+Suppose $p'$ is not normal, then it has the form $\texttt{label(}l_{i}\texttt{,} q\texttt{)}$.  Because by hypothesis $p$ is normal and therefore not of a similar form, it must be the case that $p$ is $\texttt{branchback(}l_{n}\texttt{)}$.
+
+However, this implies that $$\texttt{label(}l_{n}\texttt{,}\texttt{label(}l_{n - 1}\texttt{,} ... \texttt{label(}l_{3}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p\texttt{)}\texttt{)}\texttt{)} ... \texttt{)}\texttt{)}$$ is not a valid formula.  The reason is that $p$ is immediately open in $\{l_{n}\}$, which means so is $\texttt{label(}l_{1}\texttt{,} p\texttt{)}$ and $\texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p'\texttt{)}\texttt{)}$ and so on up to $$\texttt{label(}l_{n - 1}\texttt{,} ... \texttt{label(}l_{3}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p'\texttt{)}\texttt{)}\texttt{)} ... \texttt{)}$$
+But since this formula is immediately open in $\{l_{n}\}$, $$\texttt{label(}l_{n}\texttt{,}\texttt{label(}l_{n - 1}\texttt{,} ... \texttt{label(}l_{3}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p\texttt{)}\texttt{)}\texttt{)} ... \texttt{)}\texttt{)}$$ is not a valid formula, so $p'$ must be normal.
 \end{proof}
 
 \newtheorem*{branchbacksubstisnormalizing}{Theorem}
@@ -215,7 +217,6 @@ Because \textbf{BranchBackSubstProg} is both deterministic and normalizing, by t
 \begin{nsubstpreservesopenness}
 If $p$ is a program formula open in $L_{O}$ then $\mathcal{N}_{subst}(p)$ is also open in $L_{O}$.
 \end{nsubstpreservesopenness}
-
 \begin{proof}
 (TODO: Do this proof)
 \end{proof}
