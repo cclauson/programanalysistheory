@@ -6,6 +6,7 @@
 \usepackage{verbatim}
 \usepackage {tikz}
 \usetikzlibrary {positioning}
+\usetikzlibrary{shapes,snakes}
 %\usepackage {xcolor}
 \definecolor {processblue}{cmyk}{0.96,0,0,0}
 
@@ -64,7 +65,7 @@ We now inductively define the program formulas.  A given program formula is alwa
 
 \begin{enumerate}
 \item The special formula \texttt{HALT} is a program formula open in $\emptyset$, immediately open in $\emptyset$ and which binds $\emptyset$, where $\emptyset$ is the empty set.
-\item For every member $l$ of $L$ there exists a program formula $\texttt{branchback(}l\texttt{)}$ open in $\{l\}$, immediately open in $\{l\}$, and which binds $\{l\}$, where $\{l\}$ is the singleton set containing only $l$.
+\item For every member $l$ of $L$ there exists a program formula $\texttt{branchback(}l\texttt{)}$ open in $\{l\}$, immediately open in $\{l\}$, and which binds $\emptyset$, where $\{l\}$ is the singleton set containing only $l$.
 \item If $m$ is a member of $M$ and $p$ is a program formula open in $L_{O}$, immediately open in $L_{OI}$ and which binds $L_{B}$, then $m\texttt{;}p$ is a program formula open in $L_{O}$, immediately open in $\emptyset$, and which binds $L_{B}$, where \texttt{;} is the sequencing operator.
 \item If $p_{1}$ is a program formula open in $L_{O,1}$, immediately open in $L_{OI,1}$ and that binds$L_{B,1}$, and $p_{2}$ is a program formula open in $L_{O,2}$, immediately open in $L_{OI,2}$ and that binds $L_{B,2}$, and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a program formula open in $L_{O,1} \cup L_{O,2}$, immediately open in $\emptyset$, and which binds $L_{B,1} \cup L_{B,2}$, under the condition that $L_{O,1}$ and $L_{B,2}$ are disjoint, and $L_{O,2}$ and $L_{B,1}$ are disjoint.
 \item If $l$ is a member of $L$, $p$ is a program formula open in $L_{O}$, immediately open in $L_{OI}$, binds $L_{B}$, and $l \notin L_{OI}$, then $\texttt{label(}l\texttt{,} p\texttt{)}$ is a program formula open in $L_{O} \setminus \{l\}$, the set $L_{O}$ with $l$ removed, immediately open in $L_{OI}$ and binds $L_{B} \cup \{l\}$.
@@ -218,7 +219,11 @@ Because \textbf{BranchBackSubstProg} is both deterministic and normalizing, by t
 If $p$ is a program formula open in $L_{O}$ and which binds $L_{B}$, then $L_{O}$ and $L_{B}$ are disjoint.
 \end{openbinddisjoint}
 \begin{proof}
-(TODO: Do this proof)
+By structural induction.  Since both $\texttt{HALT}$ and $\texttt{branchback(}l\texttt{)}$ for an $l$ in $L$ bind the empty set, clearly the set of labels they bind is disjoint with the set of labels they are open in.
+
+If the set of labels $p$ binds is disjoint with the set of labels it is open in, then the same is true for $m; p$, since the sets for this formula are the same.
+
+(TODO: Finish this)
 \end{proof}
 
 \newtheorem*{bbppreservesopenness}{Lemma}
@@ -234,7 +239,7 @@ If $p$ is a program formula open in $L_{O}$, and if $p \longrightarrow p'$ under
 If $p$ is a program formula open in $L_{O}$ then $\mathcal{N}_{subst}(p)$ is also open in $L_{O}$.
 \end{nsubstpreservesopenness}
 \begin{proof}
-(TODO: Do this proof)
+This could be done easily by induction, but informally since $\mathcal{N}_{subst}$ is just the application of \textbf{BranchBackSubstProg} zero or more times, and because \textbf{BranchBackSubstProg} "preserves openness," so does $\mathcal{N}_{subst}$.
 \end{proof}
 
 \newtheorem*{openformulanormalforms}{Theorem}
@@ -276,6 +281,8 @@ Reduction rules are as follows:
 
 (Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
 
+\begin{comment}
+
 (Some latex graph code)
 
 \begin {center}
@@ -294,6 +301,62 @@ draw, processblue, text=blue, minimum width =1 cm}]
 \path (B) edge [bend left =15] node[below =0.15 cm] {$1/2$} (A);
 \path (C) edge [bend left =15] node[below =0.15 cm] {$1/2$} (B);
 \path (B) edge [bend right = -25] node[below =0.15 cm] {$1/2$} (C);
+\end{tikzpicture}
+\end{center}
+
+\end{comment}
+
+(m node)
+
+\begin {center}
+\begin {tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
+semithick ,
+state/.style ={ rectangle, top color = white, bottom color = white,
+draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
+state_invisible/.style ={ rectangle, top color = white, bottom color = white,
+draw, black, text = black, minimum width = 0.5 cm, minimum height = 0.5 cm}]]
+\node[state] (C)
+{$m$};
+\node[state_invisible, draw = none] (A) [above=of C] {};
+\node[state_invisible, draw = none] (B) [below=of C] {};
+\path (A) edge [] node[] {} (C);
+\path (C) edge [] node[] {} (B);
+\end{tikzpicture}
+\end{center}
+
+(c node)
+
+\begin {center}
+\begin {tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
+semithick ,
+state/.style ={ diamond, top color = white, bottom color = white,
+draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
+state_invisible/.style ={ rectangle, top color = white, bottom color = white,
+draw, black, text = black, minimum width = 0.5 cm, minimum height = 0.5 cm}]]
+\node[state] (C)
+{$c$};
+\node[state_invisible, draw = none] (A) [above=of C] {};
+\node[state_invisible, draw = none] (B) [below=of C] {};
+\node[state_invisible, draw = none] (D) [right=of C] {};
+\path (A) edge [] node[] {} (C);
+\path (C) edge [] node[] {$\texttt{true}$} (B);
+\path (C) edge [] node[] {$\texttt{false}$} (D);
+\end{tikzpicture}
+\end{center}
+
+(halt node)
+
+\begin {center}
+\begin {tikzpicture}[-latex, auto, node distance =2 cm and 2 cm ,on grid ,
+semithick,
+state/.style ={ circle, top color = white, bottom color = white,
+draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
+state_invisible/.style ={ rectangle, top color = white, bottom color = white,
+draw, black, text = black, minimum width = 0.5 cm, minimum height = 0.5 cm}]]
+\node[state] (C)
+{$\texttt{HALT}$};
+\node[state_invisible, draw = none] (A) [above=of C] {};
+\path (A) edge [] node[] {} (C);
 \end{tikzpicture}
 \end{center}
 
