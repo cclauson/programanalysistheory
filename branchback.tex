@@ -8,19 +8,16 @@
 \usepackage{graphicx,wrapfig}
 \usetikzlibrary {positioning}
 \usetikzlibrary{shapes,snakes}
-%\usepackage {xcolor}
 \definecolor {processblue}{cmyk}{0.96,0,0,0}
-
 
 \begin{document}
 
 \title{Branch Back Formalism for Programs}
 \author{C. E. Clauson}
-%\affiliation{Somewhere}
 \maketitle
 
 \begin{abstract}
-We introduce a formula language, called "Branch Back", which is somewhat similar to but also more general than the While programming language which has been defined in literature (source?).  Branch Back is somewhat more general than a programming language, but is rather a class of languages, in which a program is a formula in the language. (TODO: Improve this)
+We introduce a formula language, called "Branch Back", which is somewhat similar to but also more general than the While programming language which has been defined in literature (source?).  Branch Back is somewhat more general than a programming language, but is rather a class of languages, in which a program is a formula in the language. A term rewrite system-based operational semantics is defined, and the system is shown to be equivalent to more familiar control flow diagrams for computer programs.
 \end{abstract}
 
 \section{Introduction}
@@ -337,59 +334,23 @@ draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
 
 \end{wrapfigure}
 
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+\subsection{Definition}
 
-(m node)
-(c node)
-(halt node)
+A \emph{program control graph} is defined as a directed graph with three kinds of nodes with the following properties:
 
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+\begin{itemize}
+\item $M$-nodes.  $M$-nodes are labeled with a member of $M$ and have an out degree of 1.
+\item $C$-nodes.  $C$-nodes are labeled with a member of $C$ and have an out degree of 2.  Out edges from $C$ nodes are labeled with members of $\mathbb{B}$, for a given $C$ node, exactly one out edge is labeled with \texttt{true}, the other with \texttt{false}.
+\item \texttt{HALT}-nodes.  Every control flow graph has exactly one \texttt{HALT}-node.  \texttt{HALT}-nodes have an out degree of 0.
+\end{itemize}
 
-(m node)
-(c node)
-(halt node)
+No restrictions exist on the in degree of any node type.  A program control graph also has a unique \emph{start node}, which can be of any type.
 
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+\subsection{Evaluation Semantics}
 
-(m node)
-(c node)
-(halt node)
+(Define TRS-based evaluation semantics here)
 
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
+\subsection{Foo}
 
 (Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
 
@@ -559,30 +520,9 @@ We again prove by structural induction.
 The base cases are \texttt{true}, \texttt{false} and primitive conditions, \texttt{true}, \texttt{false} are already normal, and primitive conditions reduce to a normal in one reduction step.
 
 If $c_{1}$ and $c_{2}$ are both conditions which reduce to a normal in a finite number of steps, then to reduce $c_{1}\texttt{||}c_{2}$, we apply \textbf{CondRecurseOr} as many times as it takes to reduce $c_{1}$ to \texttt{true} or \texttt{false}.  If $c_{1}$ reduced to \texttt{true}, then we apply \textbf{CondTrueOr} and arrive at a normal.  Otherwise, we apply \textbf{CondFalseOr} to get $c_{2}$, which we then reduce to \texttt{true} or \texttt{false} in a finite number of steps.  We notice that the total number of steps is finite.
--
+
 Analogous reasoning applies to $c_{1}\texttt{\&\&}c_{2}$ and $\texttt{!}c_{1}$.
 \end{proof}
-
-Because conditional evaluation is deterministic and normalizing to the normals \texttt{true} and \texttt{false}, conditional evalution is an effective procedure, and gives a computable function from the set of conditions to the Boolean set $\mathbb{B}$.
-
-From this point we will use the symbol $D$ to denote the set of (non-primitive) conditions, and $\delta_{3} : D \times S \rightarrow \mathbb{B}$ to denote the computable function that maps conditions to $\mathbb{B}$.
-
-
-\section{Data Flow Analysis of A Generalized While Program}
-
-Let $P$ be a set of partitions of $S$ with the usual conditions, i.e., $P$ is pairwise disjoint and $\bigcup P = S$.  Let us assume the following:
-
-\begin{itemize}
-\item There is a computable function $\delta_{3} : M \times P \rightarrow \mathcal{P}(P)$.
-\item There is a computable function $\delta_{4} : C \times P \rightarrow \mathcal{P}(\mathbb{B})$
-\item $P$ is finite.
-\end{itemize}
-
-Then we can compute the function of type P $\rightarrow \mathcal{P}(P)$ that the program corresponds to.
-
-(TODO: Explain...)
-(IDEA: Define two forms, "expression form" and "control graph" form for Generalized While Program, explain these, explain how to interconvert)
-
 \section{Other Things}
 Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum 
 
