@@ -213,6 +213,22 @@ This is basically definitional.  In a deterministic term rewrite system, at each
 
 Because \textbf{BranchBackSubstProg} is both deterministic and normalizing, by the previous lemma each program formula has a unique normal form.  If $p$ is a program formula, we will use the notation $\mathcal{N}_{subst}(p)$ to denote the normal form of $p$ under \textbf{BranchBackSubstProg}.
 
+\newtheorem*{openbinddisjoint}{Lemma}
+\begin{openbinddisjoint}
+If $p$ is a program formula open in $L_{O}$ and which binds $L_{B}$, then $L_{O}$ and $L_{B}$ are disjoint.
+\end{openbinddisjoint}
+\begin{proof}
+(TODO: Do this proof)
+\end{proof}
+
+\newtheorem*{bbppreservesopenness}{Lemma}
+\begin{bbppreservesopenness}
+If $p$ is a program formula open in $L_{O}$, and if $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then $p'$ is also open in $L_{O}$.
+\end{bbppreservesopenness}
+\begin{proof}
+(TODO: Do this proof)
+\end{proof}
+
 \newtheorem*{nsubstpreservesopenness}{Theorem}
 \begin{nsubstpreservesopenness}
 If $p$ is a program formula open in $L_{O}$ then $\mathcal{N}_{subst}(p)$ is also open in $L_{O}$.
