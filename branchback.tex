@@ -5,6 +5,7 @@
 \usepackage[mathscr]{euscript}
 \usepackage{verbatim}
 \usepackage {tikz}
+\usepackage{graphicx,wrapfig}
 \usetikzlibrary {positioning}
 \usetikzlibrary{shapes,snakes}
 %\usepackage {xcolor}
@@ -166,6 +167,7 @@ But this is immediate.  If $q_{1}$ is normal, then $\texttt{label(}l_{i}\texttt{
 \end{proof}
 
 \newtheorem*{bbspnorecurse}{Lemma}
+
 \begin{bbspnorecurse}
 If
 $\texttt{label(}l_{n}\texttt{,}\texttt{label(}l_{n - 1}\texttt{,} ... \texttt{label(}l_{3}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p\texttt{)}\texttt{)}\texttt{)} ... \texttt{)}\texttt{)}$ reduces to\\
@@ -281,42 +283,14 @@ Reduction rules are as follows:
 
 \section{Program Control Graphs}
 
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-\begin{comment}
-
-(Some latex graph code)
-
-\begin {center}
-\begin {tikzpicture}[-latex ,auto ,node distance =4 cm and 5cm ,on grid ,
-semithick ,
-state/.style ={ rectangle, top color = white , bottom color = processblue!20,
-draw, processblue, text=blue, minimum width =1 cm}]
-\node[state] (C)
-{$1$};
-\node[state] (A) [above left=of C] {$0$};
-\node[state] (B) [above right =of C] {$2$};
-\path (A) edge [loop left] node[left] {$1/4$} (A);
-\path (C) edge [bend left =25] node[below =0.15 cm] {$1/2$} (A);
-\path (A) edge [bend right = -15] node[below =0.15 cm] {$1/2$} (C);
-\path (A) edge [bend left =25] node[above] {$1/4$} (B);
-\path (B) edge [bend left =15] node[below =0.15 cm] {$1/2$} (A);
-\path (C) edge [bend left =15] node[below =0.15 cm] {$1/2$} (B);
-\path (B) edge [bend right = -25] node[below =0.15 cm] {$1/2$} (C);
-\end{tikzpicture}
-\end{center}
-
-\end{comment}
-
-(m node)
-
-\begin {center}
-\begin {tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
+\begin{wrapfigure}{R}{0.5\textwidth}
+\begin{center}
+\begin{tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
 semithick ,
 state/.style ={ rectangle, top color = white, bottom color = white,
 draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
 state_invisible/.style ={ rectangle, top color = white, bottom color = white,
-draw, black, text = black, minimum width = 0.5 cm, minimum height = 0.5 cm}]]
+draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
 \node[state] (C)
 {$m$};
 \node[state_invisible, draw = none] (A) [above=of C] {};
@@ -325,16 +299,15 @@ draw, black, text = black, minimum width = 0.5 cm, minimum height = 0.5 cm}]]
 \path (C) edge [] node[] {} (B);
 \end{tikzpicture}
 \end{center}
+\caption{$M$-node} \label{fig:M1}
 
-(c node)
-
-\begin {center}
+\begin{center}
 \begin {tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
 semithick ,
 state/.style ={ diamond, top color = white, bottom color = white,
 draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
 state_invisible/.style ={ rectangle, top color = white, bottom color = white,
-draw, black, text = black, minimum width = 0.5 cm, minimum height = 0.5 cm}]]
+draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
 \node[state] (C)
 {$c$};
 \node[state_invisible, draw = none] (A) [above=of C] {};
@@ -344,23 +317,133 @@ draw, black, text = black, minimum width = 0.5 cm, minimum height = 0.5 cm}]]
 \path (C) edge [] node[] {$\texttt{true}$} (B);
 \path (C) edge [] node[] {$\texttt{false}$} (D);
 \end{tikzpicture}
+\caption{$C$-node} \label{fig:M1}
 \end{center}
 
-(halt node)
-
-\begin {center}
+\begin{center}
 \begin {tikzpicture}[-latex, auto, node distance =2 cm and 2 cm ,on grid ,
 semithick,
 state/.style ={ circle, top color = white, bottom color = white,
 draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
 state_invisible/.style ={ rectangle, top color = white, bottom color = white,
-draw, black, text = black, minimum width = 0.5 cm, minimum height = 0.5 cm}]]
+draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
 \node[state] (C)
 {$\texttt{HALT}$};
 \node[state_invisible, draw = none] (A) [above=of C] {};
 \path (A) edge [] node[] {} (C);
 \end{tikzpicture}
+\caption{\texttt{HALT}-node} \label{fig:M1}
 \end{center}
+
+\end{wrapfigure}
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
+
+(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+
+(m node)
+(c node)
+(halt node)
 
 \section{Equivalence of Branch Back Program Formulas and Program Control Graphs}
 
@@ -551,6 +634,76 @@ No program except for \texttt{pass} is normal.
 \begin{proof}
 (TODO: Do proof...)
 \end{proof}
+
+\end{comment}
+\begin{comment}
+
+(Some latex graph code)
+
+\begin {center}
+\begin {tikzpicture}[-latex ,auto ,node distance =4 cm and 5cm ,on grid ,
+semithick ,
+state/.style ={ rectangle, top color = white , bottom color = processblue!20,
+draw, processblue, text=blue, minimum width =1 cm}]
+\node[state] (C)
+{$1$};
+\node[state] (A) [above left=of C] {$0$};
+\node[state] (B) [above right =of C] {$2$};
+\path (A) edge [loop left] node[left] {$1/4$} (A);
+\path (C) edge [bend left =25] node[below =0.15 cm] {$1/2$} (A);
+\path (A) edge [bend right = -15] node[below =0.15 cm] {$1/2$} (C);
+\path (A) edge [bend left =25] node[above] {$1/4$} (B);
+\path (B) edge [bend left =15] node[below =0.15 cm] {$1/2$} (A);
+\path (C) edge [bend left =15] node[below =0.15 cm] {$1/2$} (B);
+\path (B) edge [bend right = -25] node[below =0.15 cm] {$1/2$} (C);
+\end{tikzpicture}
+\end{center}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+%\begin{figure}[h]
+%\hfill
+%\begin{minipage}{.5\textwidth}
+%\centering
+\begin {tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
+semithick ,
+state/.style ={ diamond, top color = white, bottom color = white,
+draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
+state_invisible/.style ={ rectangle, top color = white, bottom color = white,
+draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
+\node[state] (C)
+{$c$};
+\node[state_invisible, draw = none] (A) [above=of C] {};
+\node[state_invisible, draw = none] (B) [below=of C] {};
+\node[state_invisible, draw = none] (D) [right=of C] {};
+\path (A) edge [] node[] {} (C);
+\path (C) edge [] node[] {$\texttt{true}$} (B);
+\path (C) edge [] node[] {$\texttt{false}$} (D);
+\end{tikzpicture}
+\caption{M1} \label{fig:M1}
+%\end{minipage}
+%\end{figure}
+\end{wrapfigure}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+%\begin{figure}[h]
+%\hfill
+%\begin{minipage}{.5\textwidth}
+%\centering
+\begin {tikzpicture}[-latex, auto, node distance =2 cm and 2 cm ,on grid ,
+semithick,
+state/.style ={ circle, top color = white, bottom color = white,
+draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
+state_invisible/.style ={ rectangle, top color = white, bottom color = white,
+draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
+\node[state] (C)
+{$\texttt{HALT}$};
+\node[state_invisible, draw = none] (A) [above=of C] {};
+\path (A) edge [] node[] {} (C);
+\end{tikzpicture}
+\caption{M1} \label{fig:M1}
+%\end{minipage}
+%\end{figure}
+\end{wrapfigure}
 
 \end{comment}
 
