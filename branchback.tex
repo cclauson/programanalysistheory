@@ -54,20 +54,20 @@ For a given sextuple $(S, M, C, \delta_{M}, \delta_{C})$, we define the set $BB(
 \item Each member of $S$ (state set) is finitely representable (and thus $S$ is at most countably infinite).
 \item Each member of $M$ (primitive state mutations) can be represented by a finite formula (and thus $M$ is at most countably infinite).
 \item Each member of $C$ (primitive conditions) can be represented by a finite formula (and thus $C$ is at most countably infinite).
-\item The function $\delta_{M} : M \times S \rightarrow S$, which dictates how members of $M$ mutate members of $S$, is a (Turing-)computable function. 
-\item The function $\delta_{C} : C \times S \rightarrow \mathbb{B}$, which evaluates members of $C$ at given states in $S$, is a (Turing-)computable function.
+\item The function $\delta_{M} : M \times S \rightarrow S$, which dictates how members of $M$ mutate members of $S$, is a computable function. 
+\item The function $\delta_{C} : C \times S \rightarrow \mathbb{B}$, which evaluates members of $C$ at given states in $S$, is a computable function.
 \end{itemize}
 
 Additionally, we assume that there exists a set $L$, the label set, which is countably infinite.
 
-We now inductively define the program formulas.  A given program formula is always \emph{open in} some (possibly empty) set contained in $L$, and also always \emph{immediately open in} some (possibly empty) set also contained in $L$.  The inductive definition is as follows:
+We now inductively define the program formulas.  A given program formula is always \emph{open in} some (possibly empty) set contained in $L$, \emph{immediately open in} some (possibly empty) set contained in $L$, and also \emph{binds} some (possibly empty) set contained in $L$.  The inductive definition is as follows:
 
 \begin{enumerate}
-\item The special formula \texttt{HALT} is a program formula open in $\emptyset$ and immediately open in $\emptyset$, where $\emptyset$ is the empty set.
-\item For every member $l$ of $L$ there exists a program formula $\texttt{branchback(}l\texttt{)}$ open in $\{l\}$ and immediately open in $\{l\}$, where $\{l\}$ is the singleton set containing only $l$.
-\item If $m$ is a member of $M$ and $p$ is a program formula open in $L_{O}$ and immediately open in $L_{OI}$, then $m\texttt{;}p$ is a program formula open in $L_{O}$ and immediately open in $\emptyset$, where \texttt{;} is the sequencing operator.
-\item If $p_{1}$ is a program formula open in $L_{O,1}$ and immediately open in $L_{OI,1}$, $p_{2}$ is a program formula open in $L_{O,2}$ and immediately open in $L_{OI,2}$, and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a program formula open in $L_{O,1} \cup L_{O,2}$ and immediately open in $\emptyset$.
-\item If $l$ is a member of $L$ and $p$ is a program formula open in $L_{O}$, immediately open in $L_{OI}$, and $l \notin L_{OI}$, then $\texttt{label(}l\texttt{,} p\texttt{)}$ is a program formula open in $L_{O} \setminus \{l\}$, the set $L_{O}$ with $l$ removed, and immediately open in $L_{OI}$.
+\item The special formula \texttt{HALT} is a program formula open in $\emptyset$, immediately open in $\emptyset$ and which binds $\emptyset$, where $\emptyset$ is the empty set.
+\item For every member $l$ of $L$ there exists a program formula $\texttt{branchback(}l\texttt{)}$ open in $\{l\}$, immediately open in $\{l\}$, and which binds $\{l\}$, where $\{l\}$ is the singleton set containing only $l$.
+\item If $m$ is a member of $M$ and $p$ is a program formula open in $L_{O}$, immediately open in $L_{OI}$ and which binds $L_{B}$, then $m\texttt{;}p$ is a program formula open in $L_{O}$, immediately open in $\emptyset$, and which binds $L_{B}$, where \texttt{;} is the sequencing operator.
+\item If $p_{1}$ is a program formula open in $L_{O,1}$, immediately open in $L_{OI,1}$ and that binds$L_{B,1}$, and $p_{2}$ is a program formula open in $L_{O,2}$, immediately open in $L_{OI,2}$ and that binds $L_{B,2}$, and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a program formula open in $L_{O,1} \cup L_{O,2}$, immediately open in $\emptyset$, and which binds $L_{B,1} \cup L_{B,2}$, under the condition that $L_{O,1}$ and $L_{B,2}$ are disjoint, and $L_{O,2}$ and $L_{B,1}$ are disjoint.
+\item If $l$ is a member of $L$, $p$ is a program formula open in $L_{O}$, immediately open in $L_{OI}$, binds $L_{B}$, and $l \notin L_{OI}$, then $\texttt{label(}l\texttt{,} p\texttt{)}$ is a program formula open in $L_{O} \setminus \{l\}$, the set $L_{O}$ with $l$ removed, immediately open in $L_{OI}$ and binds $L_{B} \cup \{l\}$.
 \end{enumerate}
 
 \newtheorem*{immedopencontainedinopen}{Theorem}
