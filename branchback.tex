@@ -223,7 +223,9 @@ By structural induction.  Since both $\texttt{HALT}$ and $\texttt{branchback(}l\
 
 If the set of labels $p$ binds is disjoint with the set of labels it is open in, then the same is true for $m; p$, since the sets for this formula are the same.
 
-(TODO: Finish this)
+Suppose that $p_{1}$ and $p_{2}$ are program formulas that are open in/bind $L_{O,1}$/$L_{B,1}$ and $L_{O,2}$/$L_{B,2}$ respectively, and that $c$ is a condition.  By definition, in order for $\texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2}$ to be valid, it must be true that $L_{O,1}$ and $L_{B,2}$ are disjoint, and $L_{O,2}$ and $L_{B,1}$ are disjoint.  Furthermore, by the inductive hypothesis, $L_{O,1}$ and $L_{B,1}$ are disjoint, and $L_{O,2}$ and $L_{B,2}$ are disjoint.  Since each of $L_{O,1}$ and $L_{O,2}$ is disjoint with each of $L_{B,1}$ and $L_{B,2}$, $L_{O,1} \cup L_{O,2}$ is disjoint with $L_{B,1} \cup L_{B,2}$.  Therefore the proposition holds for $\texttt{if } c \texttt{ then } p_{1} \texttt{ else } p_{2}$.
+
+Suppose that $p$ is a program formula that is open in $L_{O}$, binds $L_{B}$, and that $l$ is a label in $L_{O}$, and that by the inductive hypothesis $L_{O}$ is disjoint with $L_{B}$.  Since $\texttt{label(}l\texttt{,} p \texttt{)}$ is open in $L_{O} \setminus \{l\}$ and binds $L_{B} \cup \{l\}$, the open and bind sets are still disjoint, completing the inductive proof.
 \end{proof}
 
 \newtheorem*{bbppreservesopenness}{Lemma}
