@@ -372,7 +372,7 @@ Let $q_{\texttt{HALT}}$ denote the \texttt{HALT} state.  Then evaluation is dict
 \item[IfTrueCfg] If $q$ is a $C$-node labeled with $c$, $\delta_{C}(c, s) = \texttt{true}$, and $q$ is connected to $q'$ with an edge labeled \texttt{true}, then $\texttt{eval}_{\texttt{cfg}}(s, q) \longrightarrow \texttt{eval}_{\texttt{cfg}}(s, q')$.
 \item[IfFalseCfg] If $q$ is a $C$-node labeled with $c$, $\delta_{C}(c, s) = \texttt{false}$, and $q$ is connected to $q'$ with an edge labeled \texttt{false}, then $\texttt{eval}_{\texttt{cfg}}(s, q) \longrightarrow \texttt{eval}_{\texttt{cfg}}(s, q')$.
 \item[MApplCfg] If $q$ is an $M$-node labeled with $m$, and $q$ is connected to $q'$, then $\texttt{eval}_{\texttt{cfg}}(s, q) \longrightarrow \texttt{eval}_{\texttt{cfg}}(\delta_{M}(m, s), q')$.
-\item[Halt] $\texttt{eval}_{\texttt{cfg}}(s, q_{\texttt{HALT}}) \longrightarrow s$
+\item[HaltCfg] $\texttt{eval}_{\texttt{cfg}}(s, q_{\texttt{HALT}}) \longrightarrow s$
 \end{description}
 
 Let $q_{0}$ denote the initial state.  (TODO: Finish this...)
