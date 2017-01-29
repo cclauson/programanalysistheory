@@ -288,7 +288,32 @@ If $p$ is a closed program formula and $\texttt{eval(}s\texttt{,} p\texttt{)} \l
 
 As a result of this proof, we see that since eval formulas are constructed initially using closed program formulas, no program formulas will ever occur which are not closed and therefore we never have to consider them.
 
-(TODO: prove normal forms and determinism, also prove not generally normalizing by showing a specific formula with assumptions about a condition and S)
+\newtheorem*{evalnormalforms}{Theorem}
+\begin{evalnormalforms}
+The normal forms in evaluation are exactly the members of $S$.
+\end{evalnormalforms}
+
+\begin{proof}
+(TODO: Do proof)
+\end{proof}
+
+\newtheorem*{evaldeterminism}{Theorem}
+\begin{evaldeterminism}
+Evaluation is deterministic.
+\end{evaldeterminism}
+
+\begin{proof}
+(TODO: Do proof)
+\end{proof}
+
+\newtheorem*{evalnotnormalizing}{Theorem}
+\begin{evalnotnormalizing}
+Evaluation is not generally normalizing.
+\end{evalnotnormalizing}
+
+\begin{proof}
+(TODO: Do proof)
+\end{proof}
 
 \section{Control Flow Graphs}
 
@@ -380,7 +405,37 @@ Let $q_{\texttt{HALT}}$ denote the \texttt{HALT} state.  Then evaluation is dict
 \item[HaltCfg] $\texttt{eval}_{\texttt{cfg}}(s, q_{\texttt{HALT}}) \longrightarrow s$
 \end{description}
 
-Let $q_{0}$ denote the initial state.  (TODO: Finish this...)
+If $q_{0}$ denotes the initial state, evaluation on a state $s$ in $S$ is done by starting with the formula $\texttt{eval}_{\texttt{cfg}}(s, q_{0})$ and applying reductions until a normal form is reached.  We will now show that this evaluation is deterministic, and if it terminates, it terminates with a member of $S$.
+
+\newtheorem*{evalcfgnormalforms}{Theorem}
+\begin{evalnormalforms}
+The normal forms in control flow graph evaluation are exactly the members of $S$.
+\end{evalnormalforms}
+
+\begin{proof}
+(TODO: Do proof)
+\end{proof}
+
+\newtheorem*{evalcfgdeterminism}{Theorem}
+\begin{evaldeterminism}
+Control flow graph evaluation is deterministic.
+\end{evaldeterminism}
+
+\begin{proof}
+(TODO: Do proof)
+\end{proof}
+
+\begin{comment}
+%this is true, but not sure if we want/need to have this here...
+\newtheorem*{evalcfgnotnormalizing}{Theorem}
+\begin{evalnotnormalizing}
+Evaluation is not generally normalizing.
+\end{evalnotnormalizing}
+
+\begin{proof}
+(TODO: Do proof)
+\end{proof}
+\end{comment}
 
 \section{Equivalence of Branch Back Program Formulas and Program Control Graphs}
 
