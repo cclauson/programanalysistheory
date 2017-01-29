@@ -8,7 +8,7 @@
 \usepackage{graphicx,wrapfig}
 \usetikzlibrary {positioning}
 \usetikzlibrary{shapes,snakes}
-\definecolor {processblue}{cmyk}{0.96,0,0,0}
+%\definecolor {processblue}{cmyk}{0.96,0,0,0}
 
 \begin{document}
 
@@ -47,7 +47,7 @@ Branch Back will be shown to meet these criteria.  Proofs will be provided for e
 The symbol $\mathbb{B}$ will be used to represent the Boolean set, which has the members \texttt{true} and \texttt{false}.
 
 \section{Branch Back}
-For a given sextuple $(S, M, C, \delta_{M}, \delta_{C})$, we define the set $BB(S, M, C, \delta_{M}, \delta_{C})$ as a set of formulas, under the following assumptions:
+For a given quintuple $(S, M, C, \delta_{M}, \delta_{C})$, we define the set $BB(S, M, C, \delta_{M}, \delta_{C})$ as a set of formulas, under the following assumptions:
 
 \begin{itemize}
 \item Each member of $S$ (state set) is finitely representable (and thus $S$ is at most countably infinite).
@@ -167,8 +167,7 @@ But this is immediate.  If $q_{1}$ is normal, then $\texttt{label(}l_{i}\texttt{
 
 \begin{bbspnorecurse}
 If
-$\texttt{label(}l_{n}\texttt{,}\texttt{label(}l_{n - 1}\texttt{,} ... \texttt{label(}l_{3}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p\texttt{)}\texttt{)}\texttt{)} ... \texttt{)}\texttt{)}$ reduces to\\
-$\texttt{label(}l_{n - 1}\texttt{,} ... \texttt{label(}l_{3}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p'\texttt{)}\texttt{)}\texttt{)} ... \texttt{)}$ via \textbf{BranchBackSubstProg}, and $p$ is normal, then $p'$ is also normal.
+$$\texttt{label(}l_{n}\texttt{,}\texttt{label(}l_{n - 1}\texttt{,} ... \texttt{label(}l_{3}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p\texttt{)}\texttt{)}\texttt{)} ... \texttt{)}\texttt{)}$$ reduces to $$\texttt{label(}l_{n - 1}\texttt{,} ... \texttt{label(}l_{3}\texttt{,} \texttt{label(}l_{2}\texttt{,} \texttt{label(}l_{1}\texttt{,} p'\texttt{)}\texttt{)}\texttt{)} ... \texttt{)}$$ via \textbf{BranchBackSubstProg}, and $p$ is normal, then $p'$ is also normal.
 \end{bbspnorecurse}
 
 \begin{proof}
@@ -262,7 +261,7 @@ We inductively define a new kind of formula, an \emph{eval formula}, in the foll
 
 \begin{enumerate}
 \item Every member of $S$ is an eval formula.
-\item If $s$ is a member of $S$ and $p$ is a closed program formula, then $\texttt{eval(}s\texttt{,} p\texttt{)}$ is an eval formula.
+\item If $s$ is a member of $S$ and $p$ is a program formula, then $\texttt{eval(}s\texttt{,} p\texttt{)}$ is an eval formula.
 \end{enumerate}
 
 Reduction rules are as follows:
@@ -275,12 +274,24 @@ Reduction rules are as follows:
 \item[Halt] $\texttt{eval(}s\texttt{, } \texttt{HALT)} \longrightarrow s$
 \end{description}
 
+Evaluation of a (closed) program formula $p$ on a state $s$ in $S$ consists of constructing the eval formula $\texttt{eval(}s\texttt{, } p \texttt{)}$ and reducing it until it reaches a member of $S$, which is the result, assuming that ever happens.  This prescription relies on showing that the reduction system is deterministic, and that member of $S$ are exactly the normals, which we will do.
+
+\newtheorem*{closednessineval}{Theorem}
+\begin{closednessineval}
+If $p$ is a closed program formula and $\texttt{eval(}s\texttt{,} p\texttt{)} \longrightarrow \texttt{eval(}s'\texttt{,} p'\texttt{)}$, then $p'$ is closed.
+\end{closednessineval}
+
+\begin{proof}
+(TODO: Do proof)
+\end{proof}
+
+As a result of this proof, we see that since eval formulas are constructed initially using closed program formulas, no program formulas will ever occur which are not closed and therefore we never have to consider them.
 
 (TODO: prove normal forms and determinism, also prove not generally normalizing by showing a specific formula with assumptions about a condition and S)
 
-\section{Program Control Graphs}
+\section{Control Flow Graphs}
 
-\begin{wrapfigure}{R}{0.5\textwidth}
+\begin{wrapfigure}{HR}{0.5\textwidth}
 \begin{center}
 \begin{tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
 semithick ,
@@ -336,7 +347,7 @@ draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
 
 \subsection{Definition}
 
-A \emph{program control graph} is defined as a directed graph with three kinds of nodes with the following properties:
+A \emph{control flow graph} is defined as a directed graph with three kinds of nodes with the following properties:
 
 \begin{itemize}
 \item $M$-nodes.  $M$-nodes are labeled with a member of $M$ and have an out degree of 1.
@@ -348,67 +359,47 @@ No restrictions exist on the in degree of any node type.  A program control grap
 
 \subsection{Evaluation Semantics}
 
-(Define TRS-based evaluation semantics here)
+Let $Q$ be the set of nodes for some control flow graph.  We define the set of control flow graph eval formulas for that graph as follows:
 
-\subsection{Foo}
+\begin{enumerate}
+\item Every member of $S$ is a control flow graph eval formula.
+\item If $s$ is a member of $S$ and $q$ is a member of $Q$, then $\texttt{eval}_{\texttt{cfg}}(s, q)$ is a control flow graph eval formula.
+\end{enumerate}
 
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
+Let $q_{\texttt{HALT}}$ denote the \texttt{HALT} state.  Then evaluation is dictated by the following reduction system:
 
-(m node)
-(c node)
-(halt node)
+\begin{description}
+\item[IfTrueCfg] If $q$ is a $C$-node labeled with $c$, $\delta_{C}(c, s) = \texttt{true}$, and $q$ is connected to $q'$ with an edge labeled \texttt{true}, then $\texttt{eval}_{\texttt{cfg}}(s, q) \longrightarrow \texttt{eval}_{\texttt{cfg}}(s, q')$.
+\item[IfFalseCfg] If $q$ is a $C$-node labeled with $c$, $\delta_{C}(c, s) = \texttt{false}$, and $q$ is connected to $q'$ with an edge labeled \texttt{false}, then $\texttt{eval}_{\texttt{cfg}}(s, q) \longrightarrow \texttt{eval}_{\texttt{cfg}}(s, q')$.
+\item[MApplCfg] If $q$ is an $M$-node labeled with $m$, and $q$ is connected to $q'$, then $\texttt{eval}_{\texttt{cfg}}(s, q) \longrightarrow \texttt{eval}_{\texttt{cfg}}(\delta_{M}(m, s), q')$.
+\item[Halt] $\texttt{eval}_{\texttt{cfg}}(s, q_{\texttt{HALT}}) \longrightarrow s$
+\end{description}
 
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
-
-(Define formalism for program control graph and operational semantics, operational semantics should not be on the graph itself, but on some other expression, where rewrites depend on graph topology)
-
-(m node)
-(c node)
-(halt node)
+Let $q_{0}$ denote the initial state.  (TODO: Finish this...)
 
 \section{Equivalence of Branch Back Program Formulas and Program Control Graphs}
 
 (These are equivalent, we can actually algorithmically interconvert, this should be shown here)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \begin{comment}
 
