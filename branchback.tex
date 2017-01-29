@@ -7,7 +7,8 @@
 \usepackage {tikz}
 \usepackage{graphicx,wrapfig}
 \usetikzlibrary {positioning}
-\usetikzlibrary{shapes,snakes}
+\usetikzlibrary{shapes}
+\usepackage{subcaption}
 %\definecolor {processblue}{cmyk}{0.96,0,0,0}
 
 \begin{document}
@@ -291,60 +292,6 @@ As a result of this proof, we see that since eval formulas are constructed initi
 
 \section{Control Flow Graphs}
 
-\begin{wrapfigure}{HR}{0.5\textwidth}
-\begin{center}
-\begin{tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
-semithick ,
-state/.style ={ rectangle, top color = white, bottom color = white,
-draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
-state_invisible/.style ={ rectangle, top color = white, bottom color = white,
-draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
-\node[state] (C)
-{$m$};
-\node[state_invisible, draw = none] (A) [above=of C] {};
-\node[state_invisible, draw = none] (B) [below=of C] {};
-\path (A) edge [] node[] {} (C);
-\path (C) edge [] node[] {} (B);
-\end{tikzpicture}
-\end{center}
-\caption{$M$-node} \label{fig:M1}
-
-\begin{center}
-\begin {tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
-semithick ,
-state/.style ={ diamond, top color = white, bottom color = white,
-draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
-state_invisible/.style ={ rectangle, top color = white, bottom color = white,
-draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
-\node[state] (C)
-{$c$};
-\node[state_invisible, draw = none] (A) [above=of C] {};
-\node[state_invisible, draw = none] (B) [below=of C] {};
-\node[state_invisible, draw = none] (D) [right=of C] {};
-\path (A) edge [] node[] {} (C);
-\path (C) edge [] node[] {$\texttt{true}$} (B);
-\path (C) edge [] node[] {$\texttt{false}$} (D);
-\end{tikzpicture}
-\caption{$C$-node} \label{fig:M1}
-\end{center}
-
-\begin{center}
-\begin {tikzpicture}[-latex, auto, node distance =2 cm and 2 cm ,on grid ,
-semithick,
-state/.style ={ circle, top color = white, bottom color = white,
-draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
-state_invisible/.style ={ rectangle, top color = white, bottom color = white,
-draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
-\node[state] (C)
-{$\texttt{HALT}$};
-\node[state_invisible, draw = none] (A) [above=of C] {};
-\path (A) edge [] node[] {} (C);
-\end{tikzpicture}
-\caption{\texttt{HALT}-node} \label{fig:M1}
-\end{center}
-
-\end{wrapfigure}
-
 \subsection{Definition}
 
 A \emph{control flow graph} is defined as a directed graph with three kinds of nodes with the following properties:
@@ -356,6 +303,64 @@ A \emph{control flow graph} is defined as a directed graph with three kinds of n
 \end{itemize}
 
 No restrictions exist on the in degree of any node type.  A program control graph also has a unique \emph{start node}, which can be of any type.
+
+\begin{figure}[ht]
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \begin{tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
+  semithick ,
+  state/.style ={ rectangle, top color = white, bottom color = white,
+  draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
+  state_invisible/.style ={ rectangle, top color = white, bottom color = white,
+  draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
+  \node[state] (C)
+  {$m$};
+  \node[state_invisible, draw = none] (A) [above=of C] {};
+  \node[state_invisible, draw = none] (B) [below=of C] {};
+  \path (A) edge [] node[] {} (C);
+  \path (C) edge [] node[] {} (B);
+  \end{tikzpicture}
+  \captionof{figure}{$M$-node}
+  \label{fig:M1}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \begin {tikzpicture}[-latex ,auto ,node distance =2 cm and 2cm ,on grid ,
+  semithick ,
+  state/.style ={ diamond, top color = white, bottom color = white,
+  draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
+  state_invisible/.style ={ rectangle, top color = white, bottom color = white,
+  draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
+  \node[state] (C)
+  {$c$};
+  \node[state_invisible, draw = none] (A) [above=of C] {};
+  \node[state_invisible, draw = none] (B) [below=of C] {};
+  \node[state_invisible, draw = none] (D) [right=of C] {};
+  \path (A) edge [] node[] {} (C);
+  \path (C) edge [] node[] {$\texttt{true}$} (B);
+  \path (C) edge [] node[] {$\texttt{false}$} (D);
+  \end{tikzpicture}
+  \captionof{figure}{$C$-node}
+  \label{fig:M1}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+  \centering
+  \begin {tikzpicture}[-latex, auto, node distance =2 cm and 2 cm ,on grid ,
+  semithick,
+  state/.style ={ circle, top color = white, bottom color = white,
+  draw, black, text = black, minimum width = 1 cm, minimum height = 1 cm},
+  state_invisible/.style ={ rectangle, top color = white, bottom color = white,
+  draw, black, text = black, minimum width = 0.1 cm, minimum height = 0.1 cm}]]
+  \node[state] (C)
+  {$\texttt{HALT}$};
+  \node[state_invisible, draw = none] (A) [above=of C] {};
+  \path (A) edge [] node[] {} (C);
+  \end{tikzpicture}
+  \captionof{figure}{\texttt{HALT}-node}
+  \label{fig:M1}
+\end{minipage}
+\end{figure}
 
 \subsection{Evaluation Semantics}
 
@@ -382,4 +387,3 @@ Let $q_{0}$ denote the initial state.  (TODO: Finish this...)
 (These are equivalent, we can actually algorithmically interconvert, this should be shown here)
 
 \end{document}
-
