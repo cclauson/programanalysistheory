@@ -232,7 +232,9 @@ Suppose that $p$ is a program formula that is open in $L_{O}$, binds $L_{B}$, an
 If $p$ is a program formula open in $L_{O}$, and if $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then $p'$ is also open in $L_{O}$.
 \end{bbppreservesopenness}
 \begin{proof}
-(TODO: Do this proof)
+If $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then we know that $p$ is of the form $\texttt{label(}l\texttt{,} q \texttt{)}$ for some $l$ in $L$ and some $q$ which is open in $l$, and we know that $p'$ is equal to $[\texttt{branchback(}l\texttt{)} \mapsto \texttt{label(}l\texttt{,} q\texttt{)}]q$.
+
+(TODO: Finish this proof, will require some subproof by structural induction probably)
 \end{proof}
 
 \newtheorem*{nsubstpreservesopenness}{Theorem}
@@ -439,7 +441,7 @@ Evaluation is not generally normalizing.
 
 \section{Equivalence of Branch Back Program Formulas and Program Control Graphs}
 
-It turns out to be true that the semantic space for Branch Back Program Formulas and Program Control Graphs are identical.  To prove this, we will show that for every (closed) Branch Back program formula, there exists a semantically equivalent program control graph, and for every program control graph, there exists a semantically equivalent (closed) Branch Back program formula.
+It turns out to be true that the semantic spaces for Branch Back Program Formulas and Program Control Graphs are identical.  To prove this, we will show that for every (closed) Branch Back program formula, there exists a semantically equivalent program control graph, and for every program control graph, there exists a semantically equivalent (closed) Branch Back program formula.
 
 \subsection{Branch Back Program Formulas to Control Flow Graphs}
 
