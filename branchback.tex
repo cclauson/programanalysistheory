@@ -227,14 +227,24 @@ Suppose that $p_{1}$ and $p_{2}$ are program formulas that are open in/bind $L_{
 Suppose that $p$ is a program formula that is open in $L_{O}$, binds $L_{B}$, and that $l$ is a label in $L_{O}$, and that by the inductive hypothesis $L_{O}$ is disjoint with $L_{B}$.  Since $\texttt{label(}l\texttt{,} p \texttt{)}$ is open in $L_{O} \setminus \{l\}$ and binds $L_{B} \cup \{l\}$, the open and bind sets are still disjoint, completing the inductive proof.
 \end{proof}
 
+\newtheorem*{substopenness}{Lemma}
+\begin{substopenness}
+If $p$ is a program formula open in $L_{O}$, $l$ is in $L_{O}$, and $q$ is a program formula not open in $l$, then $[\texttt{branchback(}l\texttt{)} \mapsto q]p$ is not open in $l$.
+\end{substopenness}
+\begin{proof}
+(TODO: Prove this)
+\end{proof}
+
 \newtheorem*{bbppreservesopenness}{Lemma}
 \begin{bbppreservesopenness}
 If $p$ is a program formula open in $L_{O}$, and if $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then $p'$ is also open in $L_{O}$.
 \end{bbppreservesopenness}
 \begin{proof}
-If $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then we know that $p$ is of the form $\texttt{label(}l\texttt{,} q \texttt{)}$ for some $l$ in $L$ and some $q$ which is open in $l$, and we know that $p'$ is equal to $[\texttt{branchback(}l\texttt{)} \mapsto \texttt{label(}l\texttt{,} q\texttt{)}]q$.
+If $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then we know that $p$ is of the form $\texttt{label(}l\texttt{,} q \texttt{)}$ for some $l$ in $L$ but not in $L_{O}$, and some $q$ which is open in $l$, and we know that $p'$ is equal to $[\texttt{branchback(}l\texttt{)} \mapsto \texttt{label(}l\texttt{,} q\texttt{)}]q$.
 
-(TODO: Finish this proof, will require some subproof by structural induction probably)
+Since $\texttt{label(}l\texttt{,} q \texttt{)}$ is a valid program formula, we know that $q$ must be open in the set $L_{O} \cup \{l\}$.
+
+(TODO: Finish this proof, possibly change previous theorem to appropriately support)
 \end{proof}
 
 \newtheorem*{nsubstpreservesopenness}{Theorem}
