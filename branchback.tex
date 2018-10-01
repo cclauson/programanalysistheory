@@ -229,10 +229,20 @@ Suppose that $p$ is a program formula that is open in $L_{O}$, binds $L_{B}$, an
 
 \newtheorem*{substopenness}{Lemma}
 \begin{substopenness}
-If $p$ is a program formula open in $L_{O}$, $l$ is in $L_{O}$, and $q$ is a program formula not open in $l$, then $[\texttt{branchback(}l\texttt{)} \mapsto q]p$ is not open in $l$.
+If $p$ is a program formula open in $L_{O,1}$, $l$ is in $L_{O,1}$, and $q$ is a program formula open in $L_{O,2}$, then $[\texttt{branchback(}l\texttt{)} \mapsto q]p$ is open in exactly $(L_{O,1} \setminus \{l\}) \cup L_{O,2}$.
 \end{substopenness}
 \begin{proof}
-(TODO: Prove this)
+By structural induction over the set of program formulas.
+
+The base cases are $\texttt{HALT}$ and $\texttt{branchback(}l\texttt{)}$ for $l$ in $L$. $\texttt{HALT}$ is easily handled, because in this case $L_{O,1} = \emptyset$, $l$ cannot be in $L_{O,1}$, and the conditional is vacuously true.  For the case $\texttt{branchback(}l\texttt{)}$, $L_{O,1} = \{l\}$, we must show that $[\texttt{branchback(}l\texttt{)} \mapsto q]\texttt{branchback(}l\texttt{)}$ is open in exactly $(\{l\} \setminus \{l\}) \cup L_{O,2}$.  But since $[\texttt{branchback(}l\texttt{)} \mapsto q]\texttt{branchback(}l\texttt{)} = q$ and $(\{l\} \setminus \{l\}) \cup L_{O,2} = L_{O,2}$, this is the same as showing that $q$ is open exactly $L_{O,2}$, which follows immediately, since this is a premise.
+
+We now consider $m\texttt{;}r$, where $m$ is a member of $M$ and $r$ is a program formula open in $L_{O}$.  $L_{O,1} = L_{O}$ and $[\texttt{branchback(}l\texttt{)} \mapsto q]p = [\texttt{branchback(}l\texttt{)} \mapsto q]m\texttt{;}r = m\texttt{;}([\texttt{branchback(}l\texttt{)} \mapsto q]r)$.  By the inductive hypothesis, $([\texttt{branchback(}l\texttt{)} \mapsto q]r)$ is open in exactly $(L_{O} \setminus \{l\}) \cup L_{O,2}$, and by the rules of openness for composition, this implies $m\texttt{;}([\texttt{branchback(}l\texttt{)} \mapsto q]r)$ is also open in exactly $(L_{O} \setminus \{l\}) \cup L_{O,2}$, which since as stated earlier $L_{O,1} = L_{O}$ is exactly what was needed to be shown for this step.
+
+Next to consider is \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ where $c$ is a condition, and $p_{1}$ and $p_{2}$ are program formulas open in $L_{O,p_{1}}$ and $L_{O,p_{2}}$ respectively.  $L_{O,1} = L_{O,p_{1}} \cup L_{O,p_{2}}$ and $[\texttt{branchback(}l\texttt{)} \mapsto q]p = [\texttt{branchback(}l\texttt{)} \mapsto q]($\texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}) = $ \texttt{if} $c$ \texttt{then} $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{1}$ \texttt{else} $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{2}$.  By the inductive hypothesis, $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{1}$ and $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{2}$ are open in exactly $(L_{O,p_{1}} \setminus \{l\}) \cup L_{O,2}$ and $(L_{O,p_{2}} \setminus \{l\}) \cup L_{O,2}$ respectively. By openness rules of \texttt{if}/\texttt{then}/\texttt{else}, \texttt{if} $c$ \texttt{then} $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{1}$ \texttt{else} $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{2}$ is open in $((L_{O,p_{1}} \setminus \{l\}) \cup L_{O,2}) \cup ((L_{O,p_{2}} \setminus \{l\}) \cup L_{O,2})$.  But this last quantity is equal to $((L_{O,p_{1}} \cup L_{O,p_{2}}) \setminus \{l\}) \cup L_{O,2}$, and since $L_{O,1} = L_{O,p_{1}} \cup L_{O,p_{2}}$, this is what needs to be shown.
+
+Finally, we consider $\texttt{label(}l\texttt{,} r\texttt{)}$, where $l$ is in $L$ and $r$ is a program formula open in $L_{O,r}$.
+
+(TODO: Finish)
 \end{proof}
 
 \newtheorem*{bbppreservesopenness}{Lemma}
@@ -244,7 +254,7 @@ If $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then we know that 
 
 Since $\texttt{label(}l\texttt{,} q \texttt{)}$ is a valid program formula, we know that $q$ must be open in the set $L_{O} \cup \{l\}$.
 
-(TODO: Finish this proof, possibly change previous theorem to appropriately support)
+(TODO: Finish this proof, follows fairly immediately from previous lemma)
 \end{proof}
 
 \newtheorem*{nsubstpreservesopenness}{Theorem}
