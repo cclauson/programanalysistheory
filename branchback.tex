@@ -66,8 +66,8 @@ We now inductively define the program formulas.  A given program formula is alwa
 \item The special formula \texttt{HALT} is a program formula open in $\emptyset$, immediately open in $\emptyset$ and which binds $\emptyset$, where $\emptyset$ is the empty set.
 \item For every member $l$ of $L$ there exists a program formula $\texttt{branchback(}l\texttt{)}$ open in $\{l\}$, immediately open in $\{l\}$, and which binds $\emptyset$, where $\{l\}$ is the singleton set containing only $l$.
 \item If $m$ is a member of $M$ and $p$ is a program formula open in $L_{O}$, immediately open in $L_{OI}$ and which binds $L_{B}$, then $m\texttt{;}p$ is a program formula open in $L_{O}$, immediately open in $\emptyset$, and which binds $L_{B}$, where \texttt{;} is the \emph{sequencing operator}.
-\item If $p_{1}$ is a program formula open in $L_{O,1}$, immediately open in $L_{OI,1}$ and that binds$L_{B,1}$, and $p_{2}$ is a program formula open in $L_{O,2}$, immediately open in $L_{OI,2}$ and that binds $L_{B,2}$, and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a program formula open in $L_{O,1} \cup L_{O,2}$, immediately open in $\emptyset$, and which binds $L_{B,1} \cup L_{B,2}$, under the condition that $L_{O,1}$ and $L_{B,2}$ are disjoint, and $L_{O,2}$ and $L_{B,1}$ are disjoint.
-\item If $l$ is a member of $L$, $p$ is a program formula open in $L_{O}$, immediately open in $L_{OI}$, binds $L_{B}$, and $l \notin L_{OI}$, then $\texttt{label(}l\texttt{,} p\texttt{)}$ is a program formula open in $L_{O} \setminus \{l\}$, the set $L_{O}$ with $l$ removed, immediately open in $L_{OI}$ and binds $L_{B} \cup \{l\}$.
+\item If $p_{1}$ is a program formula open in $L_{O,1}$, immediately open in $L_{OI,1}$ and that binds $L_{B,1}$, and $p_{2}$ is a program formula open in $L_{O,2}$, immediately open in $L_{OI,2}$ and that binds $L_{B,2}$, and $c$ is a condition, then \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ is a program formula open in $L_{O,1} \cup L_{O,2}$, immediately open in $\emptyset$, and which binds $L_{B,1} \cup L_{B,2}$, under the condition that $L_{O,1}$ and $L_{B,2}$ are disjoint, and $L_{O,2}$ and $L_{B,1}$ are disjoint.
+\item If $l$ is a member of $L$, $p$ is a program formula open in $L_{O}$, immediately open in $L_{OI}$, binds $L_{B}$, and $l \notin L_{OI}$ and $l \notin L_{B}$, then $\texttt{label(}l\texttt{,} p\texttt{)}$ is a program formula open in $L_{O} \setminus \{l\}$, the set $L_{O}$ with $l$ removed, immediately open in $L_{OI}$ and binds $L_{B} \cup \{l\}$.
 \end{enumerate}
 
 \newtheorem*{immedopencontainedinopen}{Theorem}
@@ -227,22 +227,40 @@ Suppose that $p_{1}$ and $p_{2}$ are program formulas that are open in/bind $L_{
 Suppose that $p$ is a program formula that is open in $L_{O}$, binds $L_{B}$, and that $l$ is a label in $L_{O}$, and that by the inductive hypothesis $L_{O}$ is disjoint with $L_{B}$.  Since $\texttt{label(}l\texttt{,} p \texttt{)}$ is open in $L_{O} \setminus \{l\}$ and binds $L_{B} \cup \{l\}$, the open and bind sets are still disjoint, completing the inductive proof.
 \end{proof}
 
+\newtheorem*{substnoop}{Lemma}
+\begin{substnoop}
+Suppose $p$ is a program formula open in $L_{O}$ and which binds $L_{B}$, and $l$ is a member of $L$ such that $l \notin L_{O}$ and $l \notin L_{B}$, and suppose that $q$ is any program formula.  Then $[\texttt{branchback(}l\texttt{)} \mapsto q]p = p$.
+\end{substnoop}
+\begin{proof}
+By induction.
+
+The base cases are $\texttt{HALT}$ and $\texttt{branchback(}l_0\texttt{)}$ for $l_0$ in $L$. The cases $\texttt{HALT}$ and $\texttt{branchback(}l_0\texttt{)}$ where $l_0 \neq l$ are easily handled, it's clear that no forms $\texttt{branchback(}l\texttt{)}$ exist in these formulas, so clearly $[\texttt{branchback(}l\texttt{)} \mapsto q]p = p$.  In the case of $\texttt{branchback(}l\texttt{)}$ is handled by observing that this is open in $\{l\}$, and since $l \in \{l\}$ the hypothesis fails and the proposition is true vacuously.
+
+We now consider $p = m\texttt{;}r$, where $m$ is a member of $M$ and $r$ is a program formula.  By the rules for sequencing, if $p$ is open in $L_{0}$ and binds $L_{B}$, then so does $r$.  This allows us to apply the inductive hypothesis to conclude that $[\texttt{branchback(}l\texttt{)} \mapsto q]r = r$.  $[\texttt{branchback(}l\texttt{)} \mapsto q]p = [\texttt{branchback(}l\texttt{)} \mapsto q](m\texttt{;}r) = m\texttt{;}[\texttt{branchback(}l\texttt{)} \mapsto q]r = m\texttt{;}r = p$.
+
+Next to consider is $p = $\texttt{if} $c$ \texttt{then} $r_{1}$ \texttt{else} $r_{2}$ where $c$ is a condition, and $r_{1}$ and $r_{2}$ are program formulas open in $L_{O,r_{1}}$ and $L_{O,r_{2}}$ respectively and which bind $L_{B,r_{1}}$ and $L_{B,r_{2}}$ respectively.  Since $L_{O} = L_{O,r_{1}} \cup L_{O,r_{2}}$ and $l \notin L_{O}$, then $l \notin L_{O,r_{1}}$ and $l \notin L_{O,r_{2}}$, and since $L_{B} = L_{B,r_{1}} \cup L_{B,r_{2}}$ and $l \notin L_{B}$, then $l \notin L_{B,r_{1}}$ and $l \notin L_{B,r_{2}}$
+
+this is what needs to be shown.
+
+(TODO: Finish)
+\end{proof}
+
 \newtheorem*{substopenness}{Lemma}
 \begin{substopenness}
-If $p$ is a program formula open in $L_{O,1}$, $l$ is in $L_{O,1}$, and $q$ is a program formula open in $L_{O,2}$, then $[\texttt{branchback(}l\texttt{)} \mapsto q]p$ is open in exactly $(L_{O,1} \setminus \{l\}) \cup L_{O,2}$.
+Suppose $q$ is a program formula open in $L_{O} \cup \{l\}$, where $l \notin L_{O}$, and $r$ is a program formula open in $L_{O,r}$.  Then $[\texttt{branchback(}l\texttt{)} \mapsto r]q$ is open in precisely $L_{O} \cup L_{O,r}$.
 \end{substopenness}
 \begin{proof}
-By structural induction over the set of program formulas.
+We prove that this is true for all program formulas $q$ by structural induction.
 
-The base cases are $\texttt{HALT}$ and $\texttt{branchback(}l\texttt{)}$ for $l$ in $L$. $\texttt{HALT}$ is easily handled, because in this case $L_{O,1} = \emptyset$, $l$ cannot be in $L_{O,1}$, and the conditional is vacuously true.  For the case $\texttt{branchback(}l\texttt{)}$, $L_{O,1} = \{l\}$, we must show that $[\texttt{branchback(}l\texttt{)} \mapsto q]\texttt{branchback(}l\texttt{)}$ is open in exactly $(\{l\} \setminus \{l\}) \cup L_{O,2}$.  But since $[\texttt{branchback(}l\texttt{)} \mapsto q]\texttt{branchback(}l\texttt{)} = q$ and $(\{l\} \setminus \{l\}) \cup L_{O,2} = L_{O,2}$, this is the same as showing that $q$ is open exactly $L_{O,2}$, which follows immediately, since this is a premise.
+The base cases are $\texttt{HALT}$ and $\texttt{branchback(}l_0\texttt{)}$ for $l_0$ in $L$. $\texttt{HALT}$ is not open in $l$, so the conditional is vacuously true, which is also the case for $\texttt{branchback(}l_0\texttt{)}$ when $l_0 \neq l$, leaving the case $\texttt{branchback(}l\texttt{)}$.  If this is $q$, then $L_{O} \cup \{l\} = \{l\}$ and $L_{O} = \emptyset$.  $[\texttt{branchback(}l\texttt{)} \mapsto r]q = [\texttt{branchback(}l\texttt{)} \mapsto r]\texttt{branchback(}l\texttt{)} = r$, which is open exactly in $L_{O,r}$, which is equal to $L_{O} \cup L_{O,r}$, which is what needed to be shown here.
 
-We now consider $m\texttt{;}r$, where $m$ is a member of $M$ and $r$ is a program formula open in $L_{O}$.  $L_{O,1} = L_{O}$ and $[\texttt{branchback(}l\texttt{)} \mapsto q]p = [\texttt{branchback(}l\texttt{)} \mapsto q]m\texttt{;}r = m\texttt{;}([\texttt{branchback(}l\texttt{)} \mapsto q]r)$.  By the inductive hypothesis, $([\texttt{branchback(}l\texttt{)} \mapsto q]r)$ is open in exactly $(L_{O} \setminus \{l\}) \cup L_{O,2}$, and by the rules of openness for composition, this implies $m\texttt{;}([\texttt{branchback(}l\texttt{)} \mapsto q]r)$ is also open in exactly $(L_{O} \setminus \{l\}) \cup L_{O,2}$, which since as stated earlier $L_{O,1} = L_{O}$ is exactly what was needed to be shown for this step.
+We now consider $q = m\texttt{;}s$, where $m$ is a member of $M$ and $s$ is a program formula. $[\texttt{branchback(}l\texttt{)} \mapsto r]q = [\texttt{branchback(}l\texttt{)} \mapsto r]m\texttt{;}s = m\texttt{;}[\texttt{branchback(}l\texttt{)} \mapsto r]s$.  We know from openness rules for sequencing that if $q$ is open in $L_{O} \cup \{l\}$ then so is $s$, which allows us to infer by inductive hypothesis that $[\texttt{branchback(}l\texttt{)} \mapsto r]s$ is open in $L_{O} \cup L_{O,r}$.  By the same openness rules, this implies that $q$ is open in $L_{O} \cup L_{O,r}$.
 
-Next to consider is \texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}$ where $c$ is a condition, and $p_{1}$ and $p_{2}$ are program formulas open in $L_{O,p_{1}}$ and $L_{O,p_{2}}$ respectively.  $L_{O,1} = L_{O,p_{1}} \cup L_{O,p_{2}}$ and $[\texttt{branchback(}l\texttt{)} \mapsto q]p = [\texttt{branchback(}l\texttt{)} \mapsto q]($\texttt{if} $c$ \texttt{then} $p_{1}$ \texttt{else} $p_{2}) = $ \texttt{if} $c$ \texttt{then} $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{1}$ \texttt{else} $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{2}$.  By the inductive hypothesis, $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{1}$ and $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{2}$ are open in exactly $(L_{O,p_{1}} \setminus \{l\}) \cup L_{O,2}$ and $(L_{O,p_{2}} \setminus \{l\}) \cup L_{O,2}$ respectively. By openness rules of \texttt{if}/\texttt{then}/\texttt{else}, \texttt{if} $c$ \texttt{then} $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{1}$ \texttt{else} $[\texttt{branchback(}l\texttt{)} \mapsto q]p_{2}$ is open in $((L_{O,p_{1}} \setminus \{l\}) \cup L_{O,2}) \cup ((L_{O,p_{2}} \setminus \{l\}) \cup L_{O,2})$.  But this last quantity is equal to $((L_{O,p_{1}} \cup L_{O,p_{2}}) \setminus \{l\}) \cup L_{O,2}$, and since $L_{O,1} = L_{O,p_{1}} \cup L_{O,p_{2}}$, this is what needs to be shown.
+Next to consider is $q = $\texttt{if} $c$ \texttt{then} $s_{1}$ \texttt{else} $s_{2}$ where $c$ is a condition, and $s_{1}$ and $s_{2}$ are program formulas open in $L_{O,s_{1}}$ and $L_{O,s_{2}}$ respectively.
 
-Finally, we consider $\texttt{label(}l'\texttt{,} r\texttt{)}$, where $l'$ is in $L$ and $r$ is a program formula open in $L_{O,r}$.  $L_{O,1} = L_{O,r} \setminus \{l'\}$ by the openness rules for \texttt{label}. Additionally, since by hypothesis $\texttt{label(}l'\texttt{,} r\texttt{)}$ is open in $l$, openness rules for \texttt{label} tell us that $l \neq l'$.
+this is what needs to be shown.
 
-Now $[\texttt{branchback(}l\texttt{)} \mapsto q](\texttt{label(}l'\texttt{,} r\texttt{)}) = \texttt{label(}l'\texttt{,} [\texttt{branchback(}l\texttt{)} \mapsto q]r\texttt{)}$, which, using the inductive hypothesis, we can conclude is open in $((L_{O,r} \setminus \{l\}) \cup L_{O,2}) \setminus \{l'\}$, which equals $(L_{O,r} \setminus \{l, l'\}) \cup (L_{O,2} \setminus \{l'\})$.  We have to show that this is equal to $(L_{O,1} \setminus \{l\}) \cup L_{O,2}$.
+Finally, we consider $\texttt{label(}l'\texttt{,} r\texttt{)}$, where $l'$ is in $L$ and $r$ is a program formula open in $L_{O,r}$.  
 
 (TODO: Finish)
 \end{proof}
