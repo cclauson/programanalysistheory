@@ -256,9 +256,7 @@ We now consider $q = m\texttt{;}s$, where $m$ is a member of $M$ and $s$ is a pr
 
 Next to consider is $q = $\texttt{if} $c$ \texttt{then} $s_{1}$ \texttt{else} $s_{2}$ where $c$ is a condition, and $s_{1}$ and $s_{2}$ are program formulas open in $L_{O,s_{1}}$ and $L_{O,s_{2}}$ respectively.  We know that $L_{O,s_{1}} \cup L_{O,s_{2}} = L_{O} \cup \{l\}$.  For each $L_{O,s_{i}}$ for $i = 1, 2$, it's either true that $l \in L_{O,s_{i}}$, or $l \notin L_{O,s_{i}}$, where the first case must be true for at least one.  Now, let $L_{O,s_{i}}'$ denote the openness set for $[\texttt{branchback(}l\texttt{)} \mapsto r]s_{i}$.  In the first case, that of $l \in L_{O,s_{i}}$, we can apply the inductive hypothesis to conclude that $L_{O,s_{i}}' = (L_{O,s_{i}} \setminus \{l\}) \cup L_{O,r}$.  In the second case, that of $l \notin L_{O,s_{i}}$, we use the previous lemma to conclude that $[\texttt{branchback(}l\texttt{)} \mapsto r]s_{i} = s_{i}$, and so $L_{O,s_{i}}' = L_{O,s_{i}}$, but because $l \notin L_{O,s_{i}}$, it's also true that $L_{O,s_{i}}' = L_{O,s_{i}} \setminus \{l\}$.  Now, since $[\texttt{branchback(}l\texttt{)} \mapsto r]q = $\texttt{if} $c$ \texttt{then} $[\texttt{branchback(}l\texttt{)} \mapsto r]s_{1}$ \texttt{else} $[\texttt{branchback(}l\texttt{)} \mapsto r]s_{2}$, the openness set of $[\texttt{branchback(}l\texttt{)} \mapsto r]q$ is $L_{O,s_{1}}' \cup L_{O,s_{2}}'$ as defined above.  This union, though, is equal to $(L_{O,s_{1}} \setminus \{l\}) \cup (L_{O,s_{2}} \setminus \{l\}) \cup L_{O,r} = ((L_{O,s_{1}} \cup L_{O,s_{2}}) \setminus \{l\}) \cup L_{O,r} = L_{O} \cup L_{O,r}$, which is what needed to be shown.
 
-Finally, we consider $\texttt{label(}l'\texttt{,} r\texttt{)}$, where $l'$ is in $L$ and $r$ is a program formula open in $L_{O,r}$.  
-
-(TODO: Finish)
+Finally, we consider $q = \texttt{label(}l'\texttt{,} s\texttt{)}$, where $l'$ is in $L$ and $s$ is a program formula open in $L_{O,s}$.  If $q$ is open in $L_{O} \cup \{l\}$, then $l \neq l'$ and $s$ is open in $L_{O} \cup \{l, l'\}$.  By the inductive hypothesis, we can conclude that $[\texttt{branchback(}l\texttt{)} \mapsto r]s$ is open in $L_{O} \cup \{l'\} \cup L_{O,r}$.  Since $[\texttt{branchback(}l\texttt{)} \mapsto r]q = \texttt{label(}l'\texttt{,} [\texttt{branchback(}l\texttt{)} \mapsto r]s\texttt{)}$, we can conclude that $[\texttt{branchback(}l\texttt{)} \mapsto r]q$ is open in $L_{O} \cup L_{O,r}$, which concludes the proof.
 \end{proof}
 
 \newtheorem*{bbppreservesopenness}{Lemma}
@@ -266,11 +264,7 @@ Finally, we consider $\texttt{label(}l'\texttt{,} r\texttt{)}$, where $l'$ is in
 If $p$ is a program formula open in $L_{O}$, and if $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then $p'$ is also open in $L_{O}$.
 \end{bbppreservesopenness}
 \begin{proof}
-If $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then we know that $p$ is of the form $\texttt{label(}l\texttt{,} q \texttt{)}$ for some $l$ in $L$ but not in $L_{O}$, and some $q$ which is open in $l$, and we know that $p'$ is equal to $[\texttt{branchback(}l\texttt{)} \mapsto \texttt{label(}l\texttt{,} q\texttt{)}]q$.
-
-Since $\texttt{label(}l\texttt{,} q \texttt{)}$ is a valid program formula, we know that $q$ must be open in the set $L_{O} \cup \{l\}$.
-
-(TODO: Finish this proof, follows fairly immediately from previous lemma)
+If $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then we know that $p$ is of the form $\texttt{label(}l\texttt{,} q \texttt{)}$ for some $l$ in $L$ but not in $L_{O}$, and some $q$ which is open in $l$, and we know that $p'$ is equal to $[\texttt{branchback(}l\texttt{)} \mapsto \texttt{label(}l\texttt{,} q\texttt{)}]q$.  Given also that $\texttt{label(}l\texttt{,} q \texttt{)}$ is open in $L_{O}$ by hypothesis, we can use the previous lemma to conclude that $p'$ is open in $L_{O} \cup L_{O} = L_{O}$.
 \end{proof}
 
 \newtheorem*{nsubstpreservesopenness}{Theorem}
