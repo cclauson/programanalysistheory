@@ -70,6 +70,8 @@ We now inductively define the program formulas.  A given program formula is alwa
 \item If $l$ is a member of $L$, $p$ is a program formula open in $L_{O}$, immediately open in $L_{OI}$, binds $L_{B}$, and $l \notin L_{OI}$ and $l \notin L_{B}$, then $\texttt{label(}l\texttt{,} p\texttt{)}$ is a program formula open in $L_{O} \setminus \{l\}$, the set $L_{O}$ with $l$ removed, immediately open in $L_{OI}$ and binds $L_{B} \cup \{l\}$.
 \end{enumerate}
 
+Note here that the above language imposes restrictions on the set of formulas built with the above elements that qualify at valid program formulas--imposing \emph{static semantics} on program formulas.
+
 \newtheorem*{immedopencontainedinopen}{Theorem}
 \begin{immedopencontainedinopen}
 If $p$ is a program formula open in $L_{O}$ and immediately open in $L_{OI}$, then $L_{OI} \subseteq L_{O}$.
@@ -273,6 +275,15 @@ If $p$ is a program formula open in $L_{O}$ then $\mathcal{N}_{subst}(p)$ is als
 \end{nsubstpreservesopenness}
 \begin{proof}
 This could be done easily by induction, but informally since $\mathcal{N}_{subst}$ is just the application of \textbf{BranchBackSubstProg} zero or more times, and because \textbf{BranchBackSubstProg} "preserves openness," so does $\mathcal{N}_{subst}$.
+\end{proof}
+
+\newtheorem*{programformulaclosedness}{Theorem}
+\begin{programformulaclosedness}
+If $p$ is a program formula and $p \longrightarrow p'$ under \textbf{BranchBackSubstProg}, then $p'$ is a valid program formula.
+\end{programformulaclosedness}
+
+\begin{proof}
+(TODO: Proof here)
 \end{proof}
 
 \newtheorem*{openformulanormalforms}{Theorem}
